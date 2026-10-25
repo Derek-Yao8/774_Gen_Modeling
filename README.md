@@ -1,15 +1,16 @@
 # Project 2: Generative Modeling Agent
 
 An independent Python project for objective-dependent generative modeling on
-PathMNIST and PBMC 3K. Both datasets have verified local copies under `data/`.
+PathMNIST and PBMC 3K. Both datasets have verified local copies under `data/` on the development Mac;
+for a fresh clone, download them with `python3 scripts/setup_datasets.py`.
 Project 1 remains unchanged. All code, dependencies, datasets, checkpoints and
 outputs for new runs live here.
 
 Implemented: dataset inspection → AI planning → plan validation → preprocessing →
 VAE/GAN/normalizing-flow training → generated samples → objective-specific evaluation and evidence-based recommendations.
 Non-pilot training and validation experiments are complete on both datasets, with
-consolidated generated reports in `outputs/final_experiment_set_v1`. The separate
-four-page submission PDF remains to be prepared. Final-test assessment is optional
+portable generated reports and artifacts in [submission/](submission/README.md).
+The separate four-page PDF draft is being edited by the author and will be added last. Final-test assessment is optional
 for the current submission scope and has not been performed. A one-command workflow
 with bounded validation-guided replanning is implemented.
 
@@ -234,3 +235,7 @@ state = json.loads((out / "pipeline.json").read_text())
 This reporting update postdates `final_experiment_set_v1`'s frozen source snapshot.
 That set's original code hashes and historical artifacts are retained; the new
 reporting code applies to future runs without changing its measured results.
+
+## Submission and GitHub
+
+Start with the [submission guide](submission/README.md) for all submitted reports, figures, generated samples and reproduction instructions. The guide is the current deliverable index. Earlier milestone sections and documents may link to local `outputs/` archives that are intentionally not tracked; use the portable `submission/results/` artifacts for review. `report.pdf` will be added by the author.

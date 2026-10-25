@@ -1,0 +1,297 @@
+{
+  "attempts": [
+    {
+      "plan": {
+        "task": "data_generation",
+        "objective_interpretation": "Generate continuous log-dequantized PBMC3K expression on a small training-selected gene panel for exploratory statistical analysis; assess fit, marginal distributions, correlations, diversity and training overlap without claiming biological or downstream usefulness.",
+        "evidence": [
+          "Raw 10x MTX input has 2700 cells and 32738 genes, nonnegative integer values, and no missing or infinite values.",
+          "The matrix is approximately 97.41% zero and has 16104 constant features, motivating training-only variable-gene selection.",
+          "No labels or existing splits are available; unconditional generation and random holdout are appropriate.",
+          "The budget is 15 minutes, at most 100 epochs and 2000 generated samples; available memory was approximately 5.08 GB at inspection, which is a snapshot rather than a reserved allocation. MPS is available and CUDA is unavailable.",
+          "The objective explicitly requests continuous log-dequantized expression and does not require integer synthetic counts."
+        ],
+        "models": [
+          {
+            "name": "realnvp_flow",
+            "reason": "Implemented trainer contract 1.0 directly matches unconditional continuous panel generation. Coupling networks can model joint dependencies, while analytic inversion avoids planar numerical inversion. Select one candidate to concentrate the short exploratory budget.",
+            "preprocessing": "log_dequantize_train_standardize",
+            "likelihood": "continuous",
+            "conditional": false,
+            "latent_dim": 32,
+            "hidden_dim": 64,
+            "batch_size": 64,
+            "epochs": 60,
+            "learning_rate": 0.001,
+            "patience": 8,
+            "max_minutes": 15,
+            "selected_features": 32,
+            "generate_samples": 1000,
+            "hyperparameter_rationale": "Select 32 genes by training-only dispersion ranking to restrict scope and computation. latent_dim=32 must equal the panel dimension: this standalone density model performs no dimension reduction. Six coupling layers provide moderate depth; hidden_dim=64 sets coupling-network width. Batch size 64 limits working memory while providing multiple updates per epoch. Adam uses learning rate 0.001, betas (0.9,0.999), float32 and gradient clipping at 10 per contract. Train for at most 60 epochs, with patience 8 on validation continuous NLL; select the lowest validation NLL checkpoint. The 15-minute limit is a hard ceiling, not a runtime estimate. Generate 1000 samples for exploratory diagnostics within the 2000-sample limit. No executor pilot cap is assumed. Apply fixed deterministic per-cell Uniform[1e-6,1) jitter, log(count+U), and training-fitted mean/std without library normalization. Fit by continuous maximum likelihood using change of variables, not ELBO or integer count likelihood. Reverse transforms analytically and undo standardization; save continuous log-expression without exponentiation or rounding.",
+            "flow_layers": 6
+          }
+        ],
+        "excluded_models": [
+          {
+            "name": "planar_flow",
+            "reason": "Compatible but omitted to concentrate the short budget on one model. Its limited expressiveness and checked 64-step numerical inverse add tradeoffs unnecessary for this initial proposal."
+          },
+          {
+            "name": "radial_flow",
+            "reason": "Compatible and analytically invertible, but omitted to avoid splitting the exploratory budget; its radial transforms have limited expressiveness."
+          },
+          {
+            "name": "count_vae",
+            "reason": "Implemented and compatible with raw 10x input, but its negative-binomial raw-count target and integer generation address a different output domain from the requested continuous log-dequantized density model."
+          },
+          {
+            "name": "continuous_flow",
+            "reason": "Deprecated unavailable placeholder; implemented=false. Its catalog preprocessing must not substitute for the explicit flow contracts."
+          },
+          {
+            "name": "image_vae",
+            "reason": "Requires supported uint8 2D image inputs and a Gaussian pixel likelihood; this input is a single-cell count matrix."
+          },
+          {
+            "name": "image_gan",
+            "reason": "Requires supported uint8 2D image inputs and uses an implicit image distribution; it does not match the modality or requested continuous expression density fit."
+          }
+        ],
+        "split": {
+          "strategy": "random_holdout",
+          "train_fraction": 0.7,
+          "validation_fraction": 0.15,
+          "test_fraction": 0.15,
+          "fit_preprocessing_on": "train",
+          "seed": 42
+        },
+        "evaluation": {
+          "metrics": [
+            "distribution_fidelity",
+            "diversity",
+            "nearest_neighbor_overlap"
+          ],
+          "baseline": "training_resampling",
+          "success_criteria": "Use explicit flow evaluation contract 1.0 for the continuous domain and evaluation contract 2.0 reference procedures and evidence policy. First require finite samples, expected 1000-by-32 shape, gene alignment and successful inversion; integer-count validity and zero-fraction checks do not apply. Record training and validation continuous NLL and select the checkpoint by validation NLL; NLL is not a count likelihood. Compare generated samples with equally transformed real cells using training-standardized mean marginal Wasserstein distance and correlation MAE on the selected 32 genes. Use equal-sized independently dequantized real references and ten fixed-seed reference draws, reporting medians and reference ranges, not confidence intervals. Apply the existing discrepancy screen of <=1.1 times median real-reference discrepancy with absolute tolerance 1e-8. Assess diversity with median pairwise Euclidean distances in standardized continuous log-expression coordinates and the existing held-out ratio screen 0.9..1.1. Assess overlap against a fixed training subset using its leave-one-out 1st-percentile near-distance threshold; report generated and held-out near rates and exact duplicate rates. Use matched sample sizes bounded by available held-out cells. A concrete statistical comparison is whether synthetic discrepancies meet these reference screens while diversity and overlap diagnostics remain recorded and interpretable; passing does not establish usefulness. Inspect validation NLL and these validation diagnostics before freezing the experiment. Inverse failures or nonfinite output fail the run and imply do_not_use; incomplete or budget-truncated evidence implies insufficient_evidence. Any controlled revision must use validation evidence, retain the test holdout and receive a separate budget. Evaluate the frozen final candidate on test once. No supervised utility or privacy conclusion is supported.",
+          "final_test_once": true
+        },
+        "downstream_use": "Provisional exploratory statistical analysis of this selected gene panel only. Statistical similarity cannot establish biological usefulness; downstream use requires a separately measured, converged task comparison under the evidence policy.",
+        "limitations": [
+          "No training or evaluation has run; the short budget supports exploratory evidence only and does not imply enabled executor pilot caps.",
+          "Outputs are continuous log(count+uniform jitter) expression, not integer counts or library-normalized expression. Dequantization changes the target and removes exact zeros.",
+          "The 32-gene scope cannot support whole-transcriptome claims, and latent dimension equals panel dimension.",
+          "No labels are available; conditioning, class balancing and supervised representation evaluation are outside this plan.",
+          "Flow NLL and statistical screens do not establish biological utility or privacy. No downstream task is measured, so generation alone cannot establish usability.",
+          "Resource ceilings are monitored cooperatively and by supervision, not guaranteed memory reservations; convergence within 15 minutes is unknown."
+        ]
+      },
+      "mode": "validation",
+      "models": [
+        {
+          "model": "realnvp_flow",
+          "status": "computed",
+          "task": "data_generation",
+          "output_domain": "log_dequantized_expression",
+          "validity": {
+            "passed": true,
+            "errors": [],
+            "observations": 1000,
+            "shape": [
+              1000,
+              32
+            ],
+            "dtype": "float64"
+          },
+          "counts": {
+            "training_reference": 1890,
+            "holdout": 405,
+            "generated": 1000
+          },
+          "quality": {
+            "status": "computed",
+            "matched_sample_count": 405,
+            "fidelity": {
+              "continuous_feature_wasserstein": {
+                "synthetic_discrepancy": 0.31979010131991675,
+                "real_reference_median": 0.09667600147445504,
+                "reference_range": [
+                  0.08625727918039296,
+                  0.10480248433262361
+                ],
+                "ratio": 3.3078540324655004,
+                "screen_passed": false,
+                "synthetic_discrepancy_bootstrap_95_ci": [
+                  0.3159684856751894,
+                  0.34386479047039303
+                ],
+                "uncertainty_note": "Independent row bootstrap of generated and held-out samples; conditional on one fitted model."
+              },
+              "continuous_correlation_mae": {
+                "synthetic_discrepancy": 0.059685359846986565,
+                "real_reference_median": 0.05924886578876681,
+                "reference_range": [
+                  0.05638226903373464,
+                  0.06361574699671414
+                ],
+                "ratio": 1.0073671293519093,
+                "screen_passed": true,
+                "synthetic_discrepancy_bootstrap_95_ci": [
+                  0.0759658612900964,
+                  0.0865280619723086
+                ],
+                "uncertainty_note": "Independent row bootstrap of generated and held-out samples; conditional on one fitted model."
+              }
+            },
+            "diversity": {
+              "synthetic_median_distance": 8.004363581439467,
+              "real_median_distance": 7.707882223564095,
+              "ratio": 1.0384646974715035,
+              "screen_passed": true
+            },
+            "overlap": {
+              "training_loo_percentile_1": 3.0741902140104633,
+              "synthetic_near_fraction": 0.0,
+              "heldout_near_fraction": 0.007407407407407408,
+              "synthetic_exact_duplicate_fraction": 0.0,
+              "heldout_exact_duplicate_fraction": 0.0,
+              "training_resampling_exact_duplicate_fraction": 1.0,
+              "screen_passed": true,
+              "scope": "Compared only with the recorded training reference subset; not a privacy guarantee."
+            },
+            "per_class": {},
+            "quality_screen_passed": false
+          },
+          "utility": {
+            "status": "not_applicable"
+          },
+          "recommendation": {
+            "decision": "insufficient_evidence",
+            "reason": "No downstream benefit was measured. These are development findings; a frozen final assessment is pending. Quality flags do not prove universal unusability.",
+            "evidence_summary": {
+              "version": "2.0",
+              "quality_concerns": [
+                "continuous_feature_wasserstein"
+              ],
+              "utility_direction": "not_evaluated",
+              "resampling_control_direction": "unavailable",
+              "scope": "log_dequantized_expression",
+              "interpretation": "Quality flags are exploratory descriptions. Utility intervals condition on one training run; they do not include training-seed variation."
+            }
+          },
+          "assessment": {
+            "validity": {
+              "passed": true,
+              "errors": [],
+              "observations": 1000,
+              "shape": [
+                1000,
+                32
+              ],
+              "dtype": "float64"
+            },
+            "sample_quality": {
+              "status": "computed",
+              "heuristic_screen_passed": false,
+              "interpretation": "Exploratory flags, not a calibrated scientific definition of usability."
+            },
+            "downstream_utility": {
+              "status": "not_applicable",
+              "macro_f1_delta": null,
+              "paired_bootstrap_95_ci": null,
+              "output_domain": "log_dequantized_expression",
+              "interpretation": "A task-specific comparison is required to demonstrate benefit; statistical similarity alone does not demonstrate it."
+            }
+          }
+        }
+      ],
+      "training_diagnostics": [
+        {
+          "model": "realnvp_flow",
+          "status": "trained",
+          "device": "mps",
+          "epochs_completed": 9,
+          "best_epoch": 1,
+          "best_validation_nll": 45.21160970617224,
+          "stop_reason": "early_stopping",
+          "elapsed_seconds": 14.792068792041391,
+          "train_observations": 1890,
+          "validation_observations": 405,
+          "generated_samples": 1000,
+          "fit_diagnostics": {
+            "version": "1.0",
+            "status": "available",
+            "epochs_observed": 9,
+            "series": {
+              "train_nll": {
+                "first": 45.52415308876643,
+                "last": 41.72319400524967,
+                "minimum": 41.72319400524967,
+                "minimum_epoch": 9,
+                "recent_start_epoch": 5,
+                "recent_end_epoch": 9,
+                "recent_change": -2.4261167778539914,
+                "observations": 9
+              },
+              "validation_nll": {
+                "first": 45.21160970617224,
+                "last": 46.535738711886935,
+                "minimum": 45.21160970617224,
+                "minimum_epoch": 1,
+                "recent_start_epoch": 5,
+                "recent_end_epoch": 9,
+                "recent_change": -0.017088044719933748,
+                "observations": 9
+              }
+            },
+            "hypotheses": [],
+            "limitations": [
+              "NLL is for standardized continuous log-dequantized expression. Compare only identical features and preprocessing; it is not count likelihood or ELBO.",
+              "Recent changes are descriptive, not significance tests. Improved model fit does not establish improved samples or downstream benefit."
+            ],
+            "invalid_metrics": []
+          },
+          "selected_epoch_history": [
+            {
+              "epoch": 1,
+              "train_nll": 45.52415308876643,
+              "validation_nll": 45.21160970617224,
+              "elapsed_seconds": 1.7612492500338703
+            },
+            {
+              "epoch": 5,
+              "train_nll": 44.14931078310366,
+              "validation_nll": 46.55282675660687,
+              "elapsed_seconds": 3.270428750081919
+            },
+            {
+              "epoch": 6,
+              "train_nll": 43.668370665696564,
+              "validation_nll": 46.75829448935426,
+              "elapsed_seconds": 3.646955042029731
+            },
+            {
+              "epoch": 7,
+              "train_nll": 43.088094329833986,
+              "validation_nll": 46.971141089922114,
+              "elapsed_seconds": 4.020132833044045
+            },
+            {
+              "epoch": 8,
+              "train_nll": 42.42636870530547,
+              "validation_nll": 47.152731068929036,
+              "elapsed_seconds": 4.393365417025052
+            },
+            {
+              "epoch": 9,
+              "train_nll": 41.72319400524967,
+              "validation_nll": 46.535738711886935,
+              "elapsed_seconds": 4.765158542082645
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "remaining_training_minutes": 15,
+  "round_allowance_minutes": 15
+}

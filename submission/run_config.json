@@ -1,0 +1,25 @@
+{
+  "scope": "Fresh validation runs using submitted objectives and training budgets; AI choices may differ.",
+  "runs": {
+    "pathmnist": {
+      "dataset": "data/pathmnist.npz",
+      "objective": "Generate labeled PathMNIST images and determine whether adding synthetic images improves classification relative to real-only training and class-matched real resampling. Select appropriate compatible generative models and hyperparameters from the available catalog without a prespecified model. Evaluate output validity, model fit, overall and per-class image quality, diversity, training overlap, and downstream augmentation utility. Use measured validation evidence for a controlled revision or stopping. Report limitations and do not infer clinical validity from appearance or classifier performance.",
+      "total_minutes": 60,
+      "max_rounds": 2,
+      "max_epochs": 100,
+      "max_samples": 5000,
+      "max_memory_gib": 6,
+      "split": "train"
+    },
+    "pbmc": {
+      "dataset": "data/pbmc3k/filtered_gene_bc_matrices/hg19",
+      "objective": "Generate continuous log-dequantized gene-expression profiles on a small selected-gene panel from PBMC3K for exploratory statistical analysis. Select compatible generative models and hyperparameters without a prespecified model. Evaluate output validity, model fit, marginal distributions, correlations, diversity and training overlap. Use recorded diagnostics and measured validation evidence for a controlled revision or stopping. Integer count generation is not required. Do not infer biological or downstream usefulness from statistical similarity alone.",
+      "total_minutes": 30,
+      "max_rounds": 2,
+      "max_epochs": 100,
+      "max_samples": 2000,
+      "max_memory_gib": 6,
+      "split": null
+    }
+  }
+}

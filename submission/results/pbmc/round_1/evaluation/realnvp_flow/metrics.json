@@ -1,0 +1,157 @@
+{
+  "model": "realnvp_flow",
+  "status": "computed",
+  "task": "data_generation",
+  "output_domain": "log_dequantized_expression",
+  "pilot": false,
+  "validity": {
+    "passed": true,
+    "errors": [],
+    "observations": 1000,
+    "shape": [
+      1000,
+      32
+    ],
+    "dtype": "float64"
+  },
+  "quality": {
+    "status": "computed",
+    "matched_sample_count": 405,
+    "fidelity": {
+      "continuous_feature_wasserstein": {
+        "synthetic_discrepancy": 0.31979010131991675,
+        "real_reference_median": 0.09667600147445504,
+        "reference_range": [
+          0.08625727918039296,
+          0.10480248433262361
+        ],
+        "ratio": 3.3078540324655004,
+        "screen_passed": false,
+        "synthetic_discrepancy_bootstrap_95_ci": [
+          0.3159684856751894,
+          0.34386479047039303
+        ],
+        "uncertainty_note": "Independent row bootstrap of generated and held-out samples; conditional on one fitted model."
+      },
+      "continuous_correlation_mae": {
+        "synthetic_discrepancy": 0.059685359846986565,
+        "real_reference_median": 0.05924886578876681,
+        "reference_range": [
+          0.05638226903373464,
+          0.06361574699671414
+        ],
+        "ratio": 1.0073671293519093,
+        "screen_passed": true,
+        "synthetic_discrepancy_bootstrap_95_ci": [
+          0.0759658612900964,
+          0.0865280619723086
+        ],
+        "uncertainty_note": "Independent row bootstrap of generated and held-out samples; conditional on one fitted model."
+      }
+    },
+    "diversity": {
+      "synthetic_median_distance": 8.004363581439467,
+      "real_median_distance": 7.707882223564095,
+      "ratio": 1.0384646974715035,
+      "screen_passed": true
+    },
+    "overlap": {
+      "training_loo_percentile_1": 3.0741902140104633,
+      "synthetic_near_fraction": 0.0,
+      "heldout_near_fraction": 0.007407407407407408,
+      "synthetic_exact_duplicate_fraction": 0.0,
+      "heldout_exact_duplicate_fraction": 0.0,
+      "training_resampling_exact_duplicate_fraction": 1.0,
+      "screen_passed": true,
+      "scope": "Compared only with the recorded training reference subset; not a privacy guarantee."
+    },
+    "per_class": {},
+    "quality_screen_passed": false
+  },
+  "utility": {
+    "status": "not_applicable"
+  },
+  "counts": {
+    "training_reference": 1890,
+    "holdout": 405,
+    "generated": 1000
+  },
+  "plan_criteria_coverage": "executable_contract_v2",
+  "limitations": [
+    "Subsampling caps and selected gene panels limit the scope of conclusions.",
+    "Nearest-neighbor checks cover only the training reference subset and cannot establish privacy.",
+    "Bootstrap intervals condition on one trained model and classifier fit; training variability is not included.",
+    "Quality thresholds are heuristic; biological or perceptual validity requires additional evidence."
+  ],
+  "recommendation": {
+    "decision": "insufficient_evidence",
+    "reason": "No downstream benefit was measured. These are development findings; a frozen final assessment is pending. Quality flags do not prove universal unusability.",
+    "evidence_summary": {
+      "version": "2.0",
+      "quality_concerns": [
+        "continuous_feature_wasserstein"
+      ],
+      "utility_direction": "not_evaluated",
+      "resampling_control_direction": "unavailable",
+      "scope": "log_dequantized_expression",
+      "interpretation": "Quality flags are exploratory descriptions. Utility intervals condition on one training run; they do not include training-seed variation."
+    }
+  },
+  "fit_diagnostics": {
+    "version": "1.0",
+    "status": "available",
+    "epochs_observed": 9,
+    "series": {
+      "train_nll": {
+        "first": 45.52415308876643,
+        "last": 41.72319400524967,
+        "minimum": 41.72319400524967,
+        "minimum_epoch": 9,
+        "recent_start_epoch": 5,
+        "recent_end_epoch": 9,
+        "recent_change": -2.4261167778539914,
+        "observations": 9
+      },
+      "validation_nll": {
+        "first": 45.21160970617224,
+        "last": 46.535738711886935,
+        "minimum": 45.21160970617224,
+        "minimum_epoch": 1,
+        "recent_start_epoch": 5,
+        "recent_end_epoch": 9,
+        "recent_change": -0.017088044719933748,
+        "observations": 9
+      }
+    },
+    "hypotheses": [],
+    "limitations": [
+      "NLL is for standardized continuous log-dequantized expression. Compare only identical features and preprocessing; it is not count likelihood or ELBO.",
+      "Recent changes are descriptive, not significance tests. Improved model fit does not establish improved samples or downstream benefit."
+    ],
+    "invalid_metrics": []
+  },
+  "assessment": {
+    "validity": {
+      "passed": true,
+      "errors": [],
+      "observations": 1000,
+      "shape": [
+        1000,
+        32
+      ],
+      "dtype": "float64"
+    },
+    "sample_quality": {
+      "status": "computed",
+      "heuristic_screen_passed": false,
+      "interpretation": "Exploratory flags, not a calibrated scientific definition of usability."
+    },
+    "downstream_utility": {
+      "status": "not_applicable",
+      "macro_f1_delta": null,
+      "paired_bootstrap_95_ci": null,
+      "output_domain": "log_dequantized_expression",
+      "interpretation": "A task-specific comparison is required to demonstrate benefit; statistical similarity alone does not demonstrate it."
+    }
+  }
+}

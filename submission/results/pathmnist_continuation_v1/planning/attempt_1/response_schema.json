@@ -1,0 +1,1 @@
+{"type": "object", "additionalProperties": false, "properties": {"status": {"type": "string", "enum": ["ready", "not_recommended", "needs_clarification"]}, "explanation": {"type": "string"}, "plan_json": {"type": "string"}, "questions": {"type": "array", "items": {"type": "string"}}}, "required": ["status", "explanation", "plan_json", "questions"]}

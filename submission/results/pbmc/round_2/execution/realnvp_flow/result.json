@@ -1,0 +1,44 @@
+{
+  "status": "trained",
+  "model": "realnvp_flow",
+  "device": "mps",
+  "best_epoch": 2,
+  "best_validation_nll": 45.16524665738329,
+  "epochs_completed": 10,
+  "stop_reason": "early_stopping",
+  "generated_samples": 1000,
+  "elapsed_seconds": 14.766852083033882,
+  "train_observations": 1890,
+  "validation_observations": 405,
+  "test_used": false,
+  "quality_evaluation_complete": false,
+  "trainer_contract": {
+    "version": "1.0",
+    "implemented": true,
+    "family": "realnvp_flow",
+    "architecture": "Standalone invertible data-to-standard-normal flow; learned diagonal affine transform followed by flow_layers transforms. No VAE.",
+    "preprocessing": "Select 2..128 genes using training-only dispersion ranking. Deterministic per-cell uniform dequantization, log(count+U), then training-only mean/std. No library normalization. latent_dim equals selected_features.",
+    "training": "Exact change-of-variables density of standardized continuous coordinates; Adam betas (0.9,0.999), gradient clip 10. Validation NLL selects best checkpoint and patience. This is not an integer count likelihood or ELBO.",
+    "generation": "Normal latent, reverse transforms; planar uses 64-step monotone bisection and checks inverse residual, radial and affine coupling use analytic inverses. Undo training standardization; save continuous log-expression samples without rounding or exponentiation.",
+    "tasks": "Unconditional data_generation only. Coupling hidden_dim sets MLP width; planar/radial hidden_dim=16 is an unused schema placeholder.",
+    "evaluation": {
+      "version": "1.0",
+      "domain": "Continuous log(count + fixed per-cell Uniform[1e-6,1) jitter), on a training-selected gene panel. Not raw integer counts or normalized expression.",
+      "fidelity": "Training-standardized mean marginal Wasserstein distance and correlation MAE on up to 64 training-variable genes; compare equal-size independently dequantized real references using existing 1.1x heuristic.",
+      "diversity_overlap": "Same distance-ratio and training-reference overlap diagnostics in standardized continuous log-expression coordinates. No exact-zero/count-validity claims.",
+      "utility": "No supervised utility for this unconditional generation objective. No biological or privacy guarantee."
+    },
+    "limits": "Planar/radial limited expressiveness; low-dimensional selected panel only. Dequantization changes the target and removes exact zeros. Inverse failures/nonfinite outputs fail the run."
+  },
+  "limitations": [
+    "Samples are continuous log-dequantized selected-gene expression, not integer counts.",
+    "NLL is in standardized coordinates, not a discrete count likelihood or ELBO.",
+    "Planar/radial expressiveness is limited; no biological/downstream benefit is established."
+  ],
+  "supervision": {
+    "exit_code": 0,
+    "limit_triggered": null,
+    "peak_worker_rss_bytes": 668450816,
+    "wall_seconds": 16.976585750002414
+  }
+}

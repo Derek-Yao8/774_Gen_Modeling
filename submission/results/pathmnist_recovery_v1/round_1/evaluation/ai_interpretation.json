@@ -1,0 +1,59 @@
+{
+  "status": "completed",
+  "models": {
+    "image_vae": {
+      "decision": "insufficient_evidence",
+      "interpretation": "Format validity passed for 2,500 uint8 RGB images; this establishes structural validity only. Sample-quality measurements show feature Wasserstein discrepancy 0.2664 versus real-reference median 0.0665, diversity ratio 0.7917, and exploratory flags in all nine classes. Texture and pixel-PCA energy distances are 13.1106 and 0.0823 versus reference medians 0.0440 and 0.0293, indicating differences in those representations without an acceptance cutoff. Training negative ELBO continued decreasing while validation negative ELBO worsened slightly after its epoch-13 minimum; possible overfitting is a hypothesis, not an established cause of sample or utility results. Synthetic augmentation reduced validation macro-F1 from 0.6337 to 0.5863: delta -0.0474, paired bootstrap 95% CI [-0.0681, -0.0251]. Class-6 recall fell from 0.4222 to 0.1778, while some classes improved descriptively. Real-resampling augmentation reached 0.6564, with delta +0.0227 versus baseline and CI [0.0086, 0.0384]; synthetic augmentation underperformed that control by -0.0701, CI [-0.0924, -0.0469]. These conditional validation comparisons favor retaining the baseline or investigating the resampling control. The generator is supported for exploratory diagnostics and controlled development experiments, with no demonstrated augmentation benefit in this setting.",
+      "evidence_keys": [
+        "recommendation.decision",
+        "validity",
+        "quality.fidelity.feature_wasserstein",
+        "quality.diversity",
+        "quality.per_class",
+        "quality.overlap",
+        "utility",
+        "utility.resampling_control",
+        "utility.synthetic_vs_resampling_control",
+        "fit_diagnostics",
+        "image_assessment.comparisons",
+        "visual_review.review_status",
+        "counts"
+      ],
+      "limitations": [
+        "Utility intervals resample validation observations conditional on one training run and exclude training-seed variation; a frozen final assessment is pending.",
+        "Quality screens are exploratory and do not establish universal unusability. Image feature comparisons have no acceptance cutoff, their reference ranges are not confidence intervals, and their representations are not validated histology measures.",
+        "The visual packet is prepared but not reviewed; no images were inspected here and no visual, tissue-label or biological validity is established.",
+        "Zero measured near matches and duplicates apply only to the recorded training reference subset and provide no privacy guarantee.",
+        "Validity reports 2,500 observations while counts.generated reports 2,048; quality uses 512 matched samples. These differing scopes require reconciliation before assuming all summaries describe the same sample pool.",
+        "The pixel-PCA point estimate lies below its reported bootstrap interval; the supplied bootstrap result warrants methodological review before precise uncertainty interpretation."
+      ]
+    },
+    "image_gan": {
+      "decision": "insufficient_evidence",
+      "interpretation": "Format validity passed for 2,500 uint8 RGB images, independently of sample quality or usefulness. Feature Wasserstein discrepancy is 0.1811 versus real-reference median 0.0665, overall diversity ratio is 0.7915, and all nine classes have exploratory quality flags with within-class diversity ratios below one. Texture and pixel-PCA energy distances are 1.1936 and 0.4176 versus reference medians 0.0440 and 0.0293. These describe representation-specific distribution differences without acceptance cutoffs. Validation feature Wasserstein improved overall during training, reaching its minimum at epoch 13 before increasing at epoch 14; generator and discriminator losses describe optimization and do not establish mode collapse, discriminator dominance or downstream benefit. Synthetic augmentation yielded validation macro-F1 0.6128 versus baseline 0.6337, delta -0.0209 with paired bootstrap 95% CI [-0.0475, 0.0044]; improvement is not established, and equivalence is not established either. Real-resampling augmentation reached 0.6564, delta +0.0227 versus baseline with CI [0.0086, 0.0384]. Synthetic augmentation underperformed that control by -0.0435, CI [-0.0677, -0.0219]. These results justify exploratory development and further controlled comparisons, but do not support adopting this generator for a demonstrated augmentation gain.",
+      "evidence_keys": [
+        "recommendation.decision",
+        "validity",
+        "quality.fidelity.feature_wasserstein",
+        "quality.diversity",
+        "quality.per_class",
+        "quality.overlap",
+        "utility",
+        "utility.resampling_control",
+        "utility.synthetic_vs_resampling_control",
+        "fit_diagnostics",
+        "image_assessment.comparisons",
+        "visual_review.review_status",
+        "counts"
+      ],
+      "limitations": [
+        "Results concern validation development comparisons, not final-test performance. Utility bootstrap intervals exclude training-seed uncertainty and condition on one training run.",
+        "Failed heuristic screens do not prove universal unusability; passing structural or overlap checks does not establish biological usefulness.",
+        "Image feature comparisons have no acceptance cutoff. Reference ranges are not confidence intervals, and gradient/PCA representations do not establish clinically meaningful fidelity.",
+        "The prepared visual packet remains unreviewed; no images were inspected here and no biological or tissue-label validity is established.",
+        "No measured near matches or exact duplicates were found against the recorded training reference subset; this is not a privacy guarantee.",
+        "Validity reports 2,500 observations, counts.generated reports 2,048, and quality uses 512 matched samples; these scopes require reconciliation before treating them as one sample pool."
+      ]
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "pathmnist.npz": "81823f52dc622e69db2db4c72f8e8e617938dd6864d3c1f23d4e49724a28ea72",
+  "pbmc3k/filtered_gene_bc_matrices/hg19/barcodes.tsv": "58c2a224a2b4258f7e8799a18890bda6d23824b247b80db2b08a0dcc36a4c660",
+  "pbmc3k/filtered_gene_bc_matrices/hg19/genes.tsv": "8778dd78085086be6dcafa8334f95f7cf76b25526e8ef2b63186db5127a1492c",
+  "pbmc3k/filtered_gene_bc_matrices/hg19/matrix.mtx": "7d92358b9d29128a225c50f2a662d6ccca9c71bc665e0af82692ed1361eb94e4"
+}

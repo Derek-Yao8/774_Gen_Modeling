@@ -1,0 +1,18 @@
+image_vae epoch 1: train=-2035.678, val=-2277.407
+image_vae epoch 2: train=-2328.417, val=-2345.396
+image_vae epoch 3: train=-2401.633, val=-2430.304
+image_vae epoch 4: train=-2436.868, val=-2345.812
+image_vae epoch 5: train=-2465.557, val=-2423.287
+image_vae epoch 6: train=-2478.881, val=-2455.440
+image_vae epoch 7: train=-2487.916, val=-2476.558
+image_vae epoch 8: train=-2494.218, val=-2489.804
+image_vae epoch 9: train=-2502.972, val=-2495.208
+image_vae epoch 10: train=-2508.336, val=-2500.099
+image_vae epoch 11: train=-2515.970, val=-2507.154
+image_vae epoch 12: train=-2524.497, val=-2498.502
+image_vae epoch 13: train=-2526.432, val=-2518.260
+image_vae epoch 14: train=-2530.333, val=-2491.230
+image_vae epoch 15: train=-2529.073, val=-2515.299
+image_vae epoch 16: train=-2531.471, val=-2515.318
+image_vae epoch 17: train=-2539.372, val=-2516.704
+Matplotlib is building the font cache; this may take a moment.

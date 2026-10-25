@@ -1,0 +1,10 @@
+{
+  "requested": "mps",
+  "selected": "mps",
+  "probes": [
+    {
+      "device": "mps",
+      "status": "forward_backward_passed"
+    }
+  ]
+}

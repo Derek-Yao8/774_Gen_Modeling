@@ -1,0 +1,198 @@
+{
+  "status": "prepared_for_review",
+  "selection": "Up to four samples per source and class, seeded uniformly without replacement; no labels inferred for unconditional outputs.",
+  "figures": [
+    "visual_samples_1.png",
+    "visual_samples_2.png",
+    "visual_samples_3.png"
+  ],
+  "samples": [
+    {
+      "class": "0",
+      "source": "real_holdout",
+      "original_indices": [
+        4422,
+        863,
+        9333,
+        4369
+      ]
+    },
+    {
+      "class": "0",
+      "source": "generated",
+      "original_indices": [
+        2142,
+        2367,
+        2484,
+        801
+      ]
+    },
+    {
+      "class": "1",
+      "source": "real_holdout",
+      "original_indices": [
+        7030,
+        7480,
+        6283,
+        8249
+      ]
+    },
+    {
+      "class": "1",
+      "source": "generated",
+      "original_indices": [
+        343,
+        505,
+        2494,
+        1171
+      ]
+    },
+    {
+      "class": "2",
+      "source": "real_holdout",
+      "original_indices": [
+        4770,
+        2121,
+        5285,
+        8362
+      ]
+    },
+    {
+      "class": "2",
+      "source": "generated",
+      "original_indices": [
+        1532,
+        506,
+        1757,
+        1325
+      ]
+    },
+    {
+      "class": "3",
+      "source": "real_holdout",
+      "original_indices": [
+        2794,
+        166,
+        7384,
+        3631
+      ]
+    },
+    {
+      "class": "3",
+      "source": "generated",
+      "original_indices": [
+        1704,
+        2469,
+        750,
+        1821
+      ]
+    },
+    {
+      "class": "4",
+      "source": "real_holdout",
+      "original_indices": [
+        5168,
+        9067,
+        1618,
+        416
+      ]
+    },
+    {
+      "class": "4",
+      "source": "generated",
+      "original_indices": [
+        2236,
+        2344,
+        886,
+        2164
+      ]
+    },
+    {
+      "class": "5",
+      "source": "real_holdout",
+      "original_indices": [
+        2509,
+        3640,
+        1771,
+        7237
+      ]
+    },
+    {
+      "class": "5",
+      "source": "generated",
+      "original_indices": [
+        761,
+        1103,
+        572,
+        743
+      ]
+    },
+    {
+      "class": "6",
+      "source": "real_holdout",
+      "original_indices": [
+        8199,
+        4493,
+        6484,
+        1273
+      ]
+    },
+    {
+      "class": "6",
+      "source": "generated",
+      "original_indices": [
+        1410,
+        249,
+        996,
+        2274
+      ]
+    },
+    {
+      "class": "7",
+      "source": "real_holdout",
+      "original_indices": [
+        5328,
+        7123,
+        490,
+        5767
+      ]
+    },
+    {
+      "class": "7",
+      "source": "generated",
+      "original_indices": [
+        1294,
+        1960,
+        745,
+        700
+      ]
+    },
+    {
+      "class": "8",
+      "source": "real_holdout",
+      "original_indices": [
+        3164,
+        2606,
+        6334,
+        6807
+      ]
+    },
+    {
+      "class": "8",
+      "source": "generated",
+      "original_indices": [
+        422,
+        719,
+        638,
+        485
+      ]
+    }
+  ],
+  "review_status": "not_yet_reviewed",
+  "checklist": [
+    "Compare color and stain appearance.",
+    "Inspect fine texture, blur and repeated patterns.",
+    "Compare diversity within each class.",
+    "Do not infer tissue-label correctness or clinical validity without appropriate expertise."
+  ]
+}

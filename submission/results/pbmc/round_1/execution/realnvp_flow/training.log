@@ -1,0 +1,10 @@
+realnvp_flow epoch 1: NLL=45.524, validation=45.212
+realnvp_flow epoch 2: NLL=45.214, validation=45.399
+realnvp_flow epoch 3: NLL=44.921, validation=45.639
+realnvp_flow epoch 4: NLL=44.540, validation=46.177
+realnvp_flow epoch 5: NLL=44.149, validation=46.553
+realnvp_flow epoch 6: NLL=43.668, validation=46.758
+realnvp_flow epoch 7: NLL=43.088, validation=46.971
+realnvp_flow epoch 8: NLL=42.426, validation=47.153
+realnvp_flow epoch 9: NLL=41.723, validation=46.536
+Matplotlib is building the font cache; this may take a moment.

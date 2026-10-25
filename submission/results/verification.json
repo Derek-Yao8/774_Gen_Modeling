@@ -1,0 +1,42 @@
+{
+  "status": "completed",
+  "scope": "validation experiment set; no final-test assessment",
+  "project1_files_checked": 79,
+  "project1_changed": [],
+  "project2_source_files_checked": 24,
+  "project2_source_changed": [],
+  "all_five_training_and_evaluation_results_completed": true,
+  "all_ai_interpretations_completed": true,
+  "all_output_validity_checks_passed": true,
+  "test_accessed": false,
+  "pathmnist_evaluation_indices_identical": true,
+  "pbmc_identical_arrays": {
+    "splits.npz": true,
+    "gene_selection.npz": true
+  },
+  "artifact_sha256": {
+    "pathmnist_recovery_v1/round_1/execution/effective_plan.json": "30d618aea7778617d1058991609d497524255d22e8eb7fe5a597e28897c08b57",
+    "pathmnist_recovery_v1/round_1/evaluation/evaluation_results.json": "95f311686edeac25f74a2d70b00331f226094592c84392932ce46a3bda1fc0d8",
+    "pathmnist_recovery_v1/round_1/execution/image_vae/result.json": "3439144c154d8dd030bf08bf4066471d9acc02f0a0e912308b240c3f4b9eefb2",
+    "pathmnist_recovery_v1/round_1/execution/image_vae/generated.npz": "1491f0da2c4fbc2c925ccf1c597133aba22cbc60c1e979dfc1673fea982052fc",
+    "pathmnist_recovery_v1/round_1/evaluation/image_vae/metrics.json": "3bf2bc02f30f7528b0b410bf4d2523543cbd42fa0597528f04bf0e7a2ccd16e7",
+    "pathmnist_recovery_v1/round_1/execution/image_gan/result.json": "81040b00bf704f69f1e7982e67ceb63d7961f6ee8314cc4c903b4ad0cd4c8b65",
+    "pathmnist_recovery_v1/round_1/execution/image_gan/generated.npz": "42f295479ecc49c0d4adeb7cd4deef8f89c69643ebbbe2e1a8751439393d6834",
+    "pathmnist_recovery_v1/round_1/evaluation/image_gan/metrics.json": "bf3448eabbb06e677495d2f9889e17465b96ad095f86a0f286c8a980c6c6b107",
+    "pathmnist_continuation_v1/execution/effective_plan.json": "3ec415b0229450ce57c0111f01f123b50e3f518522826cfd01f72da5c6029a90",
+    "pathmnist_continuation_v1/evaluation/evaluation_results.json": "07aea9cbae4713717c191a6604db7d23a51b9fd1cafa9d3c9d3a2e3a748f1e55",
+    "pathmnist_continuation_v1/execution/image_gan/result.json": "4c3067a71d3d591cc9c6f7c3a6633e0858981c927bc314ee9d62f427657a8d12",
+    "pathmnist_continuation_v1/execution/image_gan/generated.npz": "d898f7389b5ee31302c7055cebd3be8f2c18bfdb27a83ab8259a73a74cd2f295",
+    "pathmnist_continuation_v1/evaluation/image_gan/metrics.json": "5f07b5189b37070a5753506a3f050c660d77d2dd15ae16c939661bec4acca42b",
+    "pbmc/round_1/execution/effective_plan.json": "108d77b14c44025202c297c14700572a0984575a389aad6ae77cdc968fabe385",
+    "pbmc/round_1/evaluation/evaluation_results.json": "3ab5f27b8b8361ed19354cf0f82d92ce7d5063029c3536bc968ee706defb6342",
+    "pbmc/round_1/execution/realnvp_flow/result.json": "bd3577417af191a7ff2743bc0d731c376b8f58c2bd928b9139e0d235d45bf411",
+    "pbmc/round_1/execution/realnvp_flow/generated.npz": "6efedf4d2ac34344a1e309adf7d12f27dc713eb363013fbea23410c08bec21eb",
+    "pbmc/round_1/evaluation/realnvp_flow/metrics.json": "c53409336402fad0e80d455a273b09addc7d50300089924a7509da485cb551bd",
+    "pbmc/round_2/execution/effective_plan.json": "f87bbd06eb2546cb5766a034ffa3579d7b482f6ed1e48d25570e1c1948583545",
+    "pbmc/round_2/evaluation/evaluation_results.json": "17e142d4e0b9cb859d9a0877093e41f3c2fb077749d0b00077f83a0cc217937e",
+    "pbmc/round_2/execution/realnvp_flow/result.json": "17af3881db29af1c74c506c656b5a67540ff8ae16fcb0393d8be07da9afa41f5",
+    "pbmc/round_2/execution/realnvp_flow/generated.npz": "c437c18c48e2da8ffe89fb46ee939a44c22038c390691029e401a1a09888a9c8",
+    "pbmc/round_2/evaluation/realnvp_flow/metrics.json": "6019bcb573a41731ed8aaeea473d62e94051fb3667e0379794a378d6e9145096"
+  }
+}

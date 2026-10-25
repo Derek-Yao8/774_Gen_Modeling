@@ -1,0 +1,7 @@
+image_gan epoch 1: D=0.2973, G=2.6153, validation=0.7435
+image_gan epoch 2: D=0.4122, G=1.8510, validation=0.3891
+image_gan epoch 3: D=0.5237, G=1.2636, validation=0.4650
+image_gan epoch 4: D=0.5311, G=1.2417, validation=0.4646
+image_gan epoch 5: D=0.5452, G=1.2143, validation=0.4531
+image_gan epoch 6: D=0.5679, G=1.1249, validation=0.4973
+Matplotlib is building the font cache; this may take a moment.

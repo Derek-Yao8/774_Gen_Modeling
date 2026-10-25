@@ -1,0 +1,122 @@
+# Generative modeling plan
+
+Status: **ready**
+
+Planning only. No training has run in this stage. Implemented trainers can execute this plan after dataset checks; quality evaluation remains pending.
+
+Propose one controlled conditional image GAN revision from scratch: halve learning_rate to 0.0001 while preserving architecture, batch size, epoch limit, patience, preprocessing, task, split and evaluation. Validation quality and augmentation utility remain inadequate; the late checkpoint-score fluctuation supports testing a smaller optimization step, without promising improvement. Allocate the remaining 30-minute training ceiling to this single candidate.
+
+## Objective
+
+Generate labeled PathMNIST images for augmentation and compare real-plus-synthetic classifiers against real-only training and class-matched real resampling. This task includes augmentation; the modest observed imbalance does not itself establish a need for balancing. Use validation evidence to select, revise or stop before a frozen final test.
+
+## Evidence
+
+- The official training profile contains 89,996 finite uint8 RGB images of shape 28x28x3 and range 0..255. Both spatial dimensions meet trainer contract 1.0.
+- label_0 is complete with nine categorical classes; majority-to-minority frequency ratio is approximately 1.634. Preserve official publisher partitions.
+- Output validity passed for both previous candidates: 2,500 uint8 images each with expected shape and no reported validity errors. Validity does not establish sample quality.
+- GAN fit_diagnostics report validation_feature_wasserstein improving from 0.435429 at epoch 1 to 0.254423 at epoch 13, then worsening to 0.278949 at epoch 14. Training stopped at a wall-time limit; this does not establish convergence or diagnose mode collapse.
+- GAN sample-quality feature_wasserstein ratio was 2.722451 and diversity ratio 0.791538; both failed their existing screens, and every per-class combined screen failed. Texture energy discrepancy was 1.193572 versus real-reference median 0.044035; pixel-PCA energy discrepancy was 0.417568 versus 0.029334. These supplementary comparisons have no acceptance cutoff.
+- GAN validation_macro_f1_proxy delta versus real-only was -0.020852 with paired 95% interval [-0.047452,0.004382]; versus class-matched resampling it was -0.043545 with interval [-0.067725,-0.021875]. These validation comparisons do not support augmentation benefit.
+- VAE validation_negative_elbo was best at epoch 13; from epochs 13 to 17 training negative ELBO decreased by 12.939577 while validation negative ELBO increased by 1.556514. This is compatible with overfitting, without proving its cause. Its fidelity ratio 4.004554, diversity ratio 0.791698 and negative validation utility provide no reason simply to extend identical training.
+- Both candidates had zero synthetic near and exact-duplicate fractions against the recorded training subset; this supplies no privacy guarantee. Visual review status was not supplied.
+- Remaining_training_minutes and round_allowance_minutes are both 30. MPS is available; the approximately 4.6 GB available-memory snapshot is not a reserved allocation.
+
+## image_gan
+
+Retain the conditional GAN as the sole revision candidate because its contracted checkpoint score improved substantially through epoch 13 and its pooled-feature and texture discrepancies were smaller than the VAE's, although both models failed quality screens and neither established augmentation benefit. Test a smaller optimization step against the observed late checkpoint-score fluctuation. This comparison does not establish overall perceptual superiority: the GAN pixel-PCA discrepancy was larger.
+
+The sole scientific setting change is learning_rate 0.0002 to 0.0001 for both optimizers. fit_diagnostics validation_feature_wasserstein decreased from 0.292296 at epoch 10 to 0.254423 at epoch 13, then increased to 0.278949 at epoch 14. Together with feature_wasserstein ratio 2.722451, diversity ratio 0.791538 and negative synthetic-versus-resampling validation utility, this justifies a bounded test of smaller updates rather than an identical rerun. Predicted effect: smaller steps may reduce checkpoint-score fluctuations and improve conditional distribution matching. Competing explanation: finite-subset variation, insufficient training or architectural limits may explain the fluctuation and discrepancies; a smaller rate may instead slow learning and leave diversity or utility unchanged or worse. Generator/discriminator loss magnitudes do not prove imbalance or collapse. Preserve latent_dim 64 for noise capacity, hidden_dim 128 for moderate network width, batch_size 64 for the previously exercised memory setting, epochs 20 and patience 4 to isolate the optimization change. Preserve all pixels, selected_features 0 and 2,500 generated samples to maintain the augmentation dose. The max_minutes change from 15 to 30 is a resource ceiling change, concentrating the explicitly supplied remaining allowance on one candidate; it is not an estimated runtime or an epoch extension. Start from scratch. Scale pixels to [-1,1] and use complete label_0 conditioning under trainer contract 1.0. Separate Adam optimizers use required betas (0.5,0.999), float32 and gradient norm clipping 10, with one discriminator update followed by one non-saturating generator update. Select the minimum contracted pooled-feature validation Wasserstein score using fixed up-to-512 training/validation subsets, training-only scaler, fixed latent draws matching validation labels and aggregate/per-class discrepancies. This score is neither ELBO nor FID and does not establish usefulness. Generate standard-normal latent draws through tanh, rescale and round to uint8 without observation noise; final labels cycle across observed classes.
+
+| Setting | Value |
+|---|---|
+| preprocessing | scale_pixels_minus1_1 |
+| likelihood | implicit |
+| conditional | True |
+| latent_dim | 64 |
+| hidden_dim | 128 |
+| batch_size | 64 |
+| epochs | 20 |
+| learning_rate | 0.0001 |
+| patience | 4 |
+| max_minutes | 30 |
+| selected_features | 0 |
+| generate_samples | 2500 |
+
+## Excluded Models
+
+```json
+[
+  {
+    "name": "image_vae",
+    "reason": "Do not allocate another run in this round. Despite valid output and improving training fit, validation_negative_elbo stopped improving after epoch 13, sample fidelity and diversity failed, texture discrepancy was large, and validation augmentation was worse than real-only by -0.047373 and resampling by -0.070067, with both intervals negative. Fixed Gaussian observation noise or architectural limitations are possible competing explanations, not established causes; this contract does not expose likelihood or beta changes."
+  },
+  {
+    "name": "count_vae",
+    "reason": "Requires raw 10x MTX count data and negative-binomial raw count targets. RGB image pixels are incompatible, despite being integers."
+  },
+  {
+    "name": "planar_flow",
+    "reason": "Supports only unconditional standalone continuous maximum-likelihood generation of low-dimensional selected gene panels from raw 10x counts after fixed log(count + uniform jitter) dequantization and training-only standardization. Its continuous log-expression output is incompatible with labeled image augmentation."
+  },
+  {
+    "name": "radial_flow",
+    "reason": "Supports only unconditional continuous log-dequantized expression generation on a low-dimensional gene panel, not images or class balancing. Its analytic inverse does not resolve the modality and task mismatch."
+  },
+  {
+    "name": "realnvp_flow",
+    "reason": "Supports only unconditional continuous log-dequantized expression generation on a low-dimensional gene panel, not conditional RGB image augmentation."
+  },
+  {
+    "name": "continuous_flow",
+    "reason": "Deprecated unavailable placeholder explicitly marked unimplemented; cannot be selected."
+  }
+]
+```
+
+## Split
+
+```json
+{
+  "strategy": "official",
+  "train_fraction": 0,
+  "validation_fraction": 0,
+  "test_fraction": 0,
+  "fit_preprocessing_on": "train",
+  "seed": 42
+}
+```
+
+## Evaluation
+
+```json
+{
+  "metrics": [
+    "distribution_fidelity",
+    "diversity",
+    "nearest_neighbor_overlap",
+    "real_test_macro_f1",
+    "per_class_recall"
+  ],
+  "baseline": "real_only_classifier",
+  "success_criteria": "Apply evaluation contract 2.0. Validate finite outputs, exact expected image shapes, uint8 range and label alignment first; invalid output means do_not_use. For distribution_fidelity, use training-fitted standardized 4x4 pooled pixel/channel-variation features and mean marginal Wasserstein discrepancy overall and per class. Compare against equal-sized training-resampling and held-out-real references over ten fixed-seed draws, reporting medians and reference ranges rather than confidence intervals. Apply only the specified heuristic discrepancy screen: synthetic discrepancy <=1.1 times median real-reference discrepancy with absolute tolerance 1e-8. For diversity, compare median pairwise distances in those standardized features against equal-sized held-out samples using the specified 0.9..1.1 ratio screen. For nearest_neighbor_overlap, use a fixed training subset and its leave-one-out first-percentile distance threshold; report synthetic and held-out near rates and exact duplicate rates without privacy claims. Supplement these metrics with the contracted joint empirical energy distances for local-gradient statistics and training-only pixel PCA of up to 32 components, reference draws and conditional bootstrap intervals without additional cutoffs. Review fixed-seed per-class real/generated visual packets with source indices and explicit review status; these are not validated histology scores. Evaluate each model's augmentation separately using the fixed C=1 logistic classifier on training-fitted pooled-image features: real-only, real-plus-synthetic and class-matched real-resampling augmentation controls, matching the synthetic arm's added labels and sample counts. Report macro-F1 and per-class recall with paired class-stratified bootstrap comparisons. Use validation mode for selection and controlled revision or stopping; adversarial loss, ELBO and GAN checkpoint scores do not establish augmentation benefit. Freeze the chosen configuration and comparisons before final mode evaluates the official test once. Only a converged frozen comparison with positive paired intervals against both real-only and resampling supports task-scoped limited_use; a negative interval supports task-scoped do_not_use, and otherwise evidence remains insufficient_evidence. Quality screens alone never establish usability. The legacy utility_gate is descriptive, not the decision gate. Any revision must use remaining allocated time; if none remains, stop and propose a separately budgeted follow-up rather than exceed the ceiling.",
+  "final_test_once": true
+}
+```
+
+## Provisional downstream use
+
+Synthetic images remain provisional research augmentation candidates. The existing evidence is validation-only and does not support deployment. Any eventual support applies only to the measured pooled-feature logistic classification task; neither appearance nor classification performance establishes clinical validity.
+
+## Limitations
+
+- This revision is a proposal, not a training result. No improvement is promised.
+- One model receives a hard 30-minute training ceiling, within the supplied remaining allowance. No executor pilot caps are assumed enabled; they require an explicit execution flag.
+- The previous GAN generator stopped at a wall-time limit. The converged flag on its classifier utility comparison does not establish generator convergence.
+- A smaller learning rate may slow training. Keep epochs and patience unchanged; do not silently extend training or alter acceptance criteria.
+- Conditional generation cycles approximately evenly across nine classes; this does not equalize final real-plus-synthetic class totals.
+- Fit all learned feature transforms, scalers and PCA on official training data only. Validation guides this controlled revision; reserve the official test for one frozen final evaluation.
+- Bootstrap intervals condition on the fitted runs and exclude training-seed uncertainty. Repeated validation selection can introduce selection optimism.
+- Pooled features, local gradients and pixel PCA can miss histological structure. Supplementary energy distances have no acceptance cutoffs, and explicit visual-review status remains necessary.
+- Training-overlap diagnostics provide no privacy guarantee. Quality screens are exploratory workflow controls and never establish usability.
+- Classifier controls, visual review and supplementary evaluation require their own reported completion and resource accounting. If this controlled revision does not provide supporting evidence, stop rather than relax screens or repeat an identical configuration.

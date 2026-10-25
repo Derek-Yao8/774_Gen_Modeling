@@ -1,0 +1,9 @@
+{
+  "original_pathmnist": "pathmnist",
+  "last_completed_gan_epoch": 4,
+  "completed_vae_epochs": 17,
+  "process_check": "No experiment runner or training worker remained after session interruption.",
+  "recovery": "pathmnist_recovery_v1",
+  "strategy": "Replay archived first plan in a clean full workflow; then live AI feedback. Original artifacts unchanged. PBMC is retained complete.",
+  "budget_note": "Recovery has the same per-workflow 60-minute ceiling; interrupted compute is additional development overhead."
+}

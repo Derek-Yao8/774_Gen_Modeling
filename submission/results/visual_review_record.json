@@ -1,0 +1,18 @@
+{
+  "reviewer": "Codex assistant",
+  "review_type": "non-expert post-run visual inspection",
+  "date": "2026-10-23",
+  "expert_review": false,
+  "images_sha256": {
+    "pathmnist_recovery_v1/round_1/evaluation/image_gan/visual_samples_3.png": "7d7f196d0effd59307fe471116c5baa6450af158a673cce69a4871074328aab2",
+    "pathmnist_recovery_v1/round_1/evaluation/image_gan/visual_samples_2.png": "dbb278d2ea106280223762f62f8bcd62c22cb076cfcb7c07f8df6262162f4e8e",
+    "pathmnist_recovery_v1/round_1/evaluation/image_gan/visual_samples_1.png": "0b6dd1e1f4c5af03fa92f84a8633fb603d40d0de9584fcff091cdf6c968c5f5e",
+    "pathmnist_recovery_v1/round_1/evaluation/image_vae/visual_samples_3.png": "caa4cac586d6af432127cdd5455483fde5ebb97ad78541755de10b837bade101",
+    "pathmnist_recovery_v1/round_1/evaluation/image_vae/visual_samples_2.png": "a33d8b7642031446e4047b7adc47136546b571faa7951e31b628da706a14d1a6",
+    "pathmnist_recovery_v1/round_1/evaluation/image_vae/visual_samples_1.png": "fa04bbf2981962fa6deadfd3d1c56c8c04bc122229d39e28121662908cc40856",
+    "pathmnist_continuation_v1/evaluation/image_gan/visual_samples_3.png": "dc75f17d396c21a2f06a6c81bbd12f0f51806c4b0642de9f8f7da1e40e728caa",
+    "pathmnist_continuation_v1/evaluation/image_gan/visual_samples_2.png": "7c9e1bd75720658d104fe6fc2a9f62fc81461c1706da8b1744d3612a461ea101",
+    "pathmnist_continuation_v1/evaluation/image_gan/visual_samples_1.png": "fefd5e92330481eb90919bf83361245bc4ea180c2f48088bb7da13b77b84626c"
+  },
+  "notes": "visual_review.md"
+}

@@ -1,0 +1,172 @@
+[
+  {
+    "epoch": 1,
+    "train_negative_elbo": -2035.6778273967125,
+    "train_reconstruction_nll": -2064.2372990801546,
+    "train_kl": 28.55946540238831,
+    "validation_negative_elbo": -2277.407257507153,
+    "validation_reconstruction_nll": -2307.3634146927166,
+    "validation_kl": 29.95617251603997,
+    "elapsed_seconds": 26.769174916902557
+  },
+  {
+    "epoch": 2,
+    "train_negative_elbo": -2328.4166013172635,
+    "train_reconstruction_nll": -2358.8671823782447,
+    "train_kl": 30.45058325291888,
+    "validation_negative_elbo": -2345.3963151067696,
+    "validation_reconstruction_nll": -2376.078871283518,
+    "validation_kl": 30.682582717187785,
+    "elapsed_seconds": 53.270309624960646
+  },
+  {
+    "epoch": 3,
+    "train_negative_elbo": -2401.6326911512906,
+    "train_reconstruction_nll": -2431.695406861833,
+    "train_kl": 30.06272005304728,
+    "validation_negative_elbo": -2430.3040871542007,
+    "validation_reconstruction_nll": -2461.357811465258,
+    "validation_kl": 31.053715226555862,
+    "elapsed_seconds": 79.33428349997848
+  },
+  {
+    "epoch": 4,
+    "train_negative_elbo": -2436.868384677774,
+    "train_reconstruction_nll": -2467.499034494849,
+    "train_kl": 30.630651468403887,
+    "validation_negative_elbo": -2345.812103088452,
+    "validation_reconstruction_nll": -2375.442297885533,
+    "validation_kl": 29.630192557223936,
+    "elapsed_seconds": 103.3822144579608
+  },
+  {
+    "epoch": 5,
+    "train_negative_elbo": -2465.5566916146795,
+    "train_reconstruction_nll": -2496.152656980067,
+    "train_kl": 30.59597273774505,
+    "validation_negative_elbo": -2423.2868476632784,
+    "validation_reconstruction_nll": -2453.4100350094336,
+    "validation_kl": 30.123200176716423,
+    "elapsed_seconds": 128.36681425001007
+  },
+  {
+    "epoch": 6,
+    "train_negative_elbo": -2478.880701577188,
+    "train_reconstruction_nll": -2510.1952795775296,
+    "train_kl": 31.314578205920615,
+    "validation_negative_elbo": -2455.440026333217,
+    "validation_reconstruction_nll": -2487.5714281670143,
+    "validation_kl": 32.13139806790907,
+    "elapsed_seconds": 153.31560629198793
+  },
+  {
+    "epoch": 7,
+    "train_negative_elbo": -2487.916330526148,
+    "train_reconstruction_nll": -2519.4286698983497,
+    "train_kl": 31.51233639838542,
+    "validation_negative_elbo": -2476.558270344206,
+    "validation_reconstruction_nll": -2507.0953577553355,
+    "validation_kl": 30.53708723267285,
+    "elapsed_seconds": 178.48195579193998
+  },
+  {
+    "epoch": 8,
+    "train_negative_elbo": -2494.218134358489,
+    "train_reconstruction_nll": -2525.684089648776,
+    "train_kl": 31.465955715348144,
+    "validation_negative_elbo": -2489.804359701432,
+    "validation_reconstruction_nll": -2521.281066382041,
+    "validation_kl": 31.476720180763145,
+    "elapsed_seconds": 203.59072274994105
+  },
+  {
+    "epoch": 9,
+    "train_negative_elbo": -2502.9724304478636,
+    "train_reconstruction_nll": -2534.9886810182015,
+    "train_kl": 32.01625008050895,
+    "validation_negative_elbo": -2495.208469639488,
+    "validation_reconstruction_nll": -2527.2632363070397,
+    "validation_kl": 32.05476065799266,
+    "elapsed_seconds": 228.9697166669648
+  },
+  {
+    "epoch": 10,
+    "train_negative_elbo": -2508.335883233265,
+    "train_reconstruction_nll": -2540.7715144219083,
+    "train_kl": 32.43562777577848,
+    "validation_negative_elbo": -2500.0993829030886,
+    "validation_reconstruction_nll": -2534.2147931842887,
+    "validation_kl": 34.11541705949456,
+    "elapsed_seconds": 254.66286170796957
+  },
+  {
+    "epoch": 11,
+    "train_negative_elbo": -2515.9701957131256,
+    "train_reconstruction_nll": -2549.338892286272,
+    "train_kl": 33.36869626524417,
+    "validation_negative_elbo": -2507.1537496329593,
+    "validation_reconstruction_nll": -2542.1593653554205,
+    "validation_kl": 35.00561371368201,
+    "elapsed_seconds": 279.92546016699634
+  },
+  {
+    "epoch": 12,
+    "train_negative_elbo": -2524.496697162235,
+    "train_reconstruction_nll": -2558.3070381144544,
+    "train_kl": 33.81034049155304,
+    "validation_negative_elbo": -2498.501583546269,
+    "validation_reconstruction_nll": -2532.107353054872,
+    "validation_kl": 33.605786617542925,
+    "elapsed_seconds": 304.3676811249461
+  },
+  {
+    "epoch": 13,
+    "train_negative_elbo": -2526.432388151713,
+    "train_reconstruction_nll": -2560.1749317222257,
+    "train_kl": 33.74254257890181,
+    "validation_negative_elbo": -2518.2602662060176,
+    "validation_reconstruction_nll": -2551.748320398403,
+    "validation_kl": 33.488062189369856,
+    "elapsed_seconds": 329.09918699995615
+  },
+  {
+    "epoch": 14,
+    "train_negative_elbo": -2530.3327404503566,
+    "train_reconstruction_nll": -2564.0810374015755,
+    "train_kl": 33.7482947103659,
+    "validation_negative_elbo": -2491.230060807708,
+    "validation_reconstruction_nll": -2524.394981655775,
+    "validation_kl": 33.164935137547765,
+    "elapsed_seconds": 354.2403369579697
+  },
+  {
+    "epoch": 15,
+    "train_negative_elbo": -2529.073085366294,
+    "train_reconstruction_nll": -2562.666103921025,
+    "train_kl": 33.593018817363294,
+    "validation_negative_elbo": -2515.2991667590777,
+    "validation_reconstruction_nll": -2549.1579665008994,
+    "validation_kl": 33.85879996832444,
+    "elapsed_seconds": 380.4798532499699
+  },
+  {
+    "epoch": 16,
+    "train_negative_elbo": -2531.4713564852013,
+    "train_reconstruction_nll": -2565.1350953163023,
+    "train_kl": 33.66374263664241,
+    "validation_negative_elbo": -2515.3175056149416,
+    "validation_reconstruction_nll": -2548.772455568554,
+    "validation_kl": 33.45494096215273,
+    "elapsed_seconds": 405.0010783330072
+  },
+  {
+    "epoch": 17,
+    "train_negative_elbo": -2539.37196481736,
+    "train_reconstruction_nll": -2573.9162823903284,
+    "train_kl": 34.54431940376549,
+    "validation_negative_elbo": -2516.7037525809988,
+    "validation_reconstruction_nll": -2551.3905857578843,
+    "validation_kl": 34.68685054512131,
+    "elapsed_seconds": 430.1911327919224
+  }
+]

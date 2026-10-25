@@ -1,0 +1,57 @@
+{
+  "experiment_set": "final_experiment_set_v1",
+  "date": "2026-10-22",
+  "scope": "Final submission validation experiment set; NOT final-test assessment. No pilot caps. Full designated training splits; bounded revision.",
+  "runs": {
+    "pathmnist": {
+      "dataset": "../774_Dim_Red_Project/data/pathmnist.npz",
+      "objective": "Generate labeled PathMNIST images and determine whether adding synthetic images improves classification relative to real-only training and class-matched real resampling. Select appropriate compatible generative models and hyperparameters from the available catalog without a prespecified model. Evaluate output validity, model fit, overall and per-class image quality, diversity, training overlap, and downstream augmentation utility. Use measured validation evidence for a controlled revision or stopping. Report limitations and do not infer clinical validity from appearance or classifier performance.",
+      "total_minutes": 60,
+      "max_rounds": 2,
+      "max_epochs": 100,
+      "max_samples": 5000,
+      "device": "mps",
+      "max_memory_gib": 6,
+      "split": "train",
+      "output": "outputs/final_experiment_set_v1/pathmnist"
+    },
+    "pbmc": {
+      "dataset": "../774_Dim_Red_Project/data/pbmc3k/filtered_gene_bc_matrices/hg19",
+      "objective": "Generate continuous log-dequantized gene-expression profiles on a small selected-gene panel from PBMC3K for exploratory statistical analysis. Select compatible generative models and hyperparameters without a prespecified model. Evaluate output validity, model fit, marginal distributions, correlations, diversity and training overlap. Use recorded diagnostics and measured validation evidence for a controlled revision or stopping. Integer count generation is not required. Do not infer biological or downstream usefulness from statistical similarity alone.",
+      "total_minutes": 30,
+      "max_rounds": 2,
+      "max_epochs": 100,
+      "max_samples": 2000,
+      "device": "mps",
+      "max_memory_gib": 6,
+      "split": null,
+      "output": "outputs/final_experiment_set_v1/pbmc"
+    }
+  },
+  "source_sha256": {
+    "genmodel_agent/__init__.py": "834021499b42fc0b7d9208e340fa20fbe166a57f3fdaba2ccb15ef4ec509ac1c",
+    "genmodel_agent/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "genmodel_agent/base_profile.py": "2c01c0d4ed6b08ee8c269f792fed2e38535c16813258b000d0111dc2248cacd6",
+    "genmodel_agent/capabilities.py": "f0d8812276f0faefc84c1685b5b86106a0665263d065f5b10f3754364469d1d3",
+    "genmodel_agent/cli.py": "b3bcb8a3875fa822993cbfa4f9d162032794c9582a4f1be29f157eedb0c550e1",
+    "genmodel_agent/data.py": "c47e936baf96343c5564f7ecf576ed5997ebd9fbc46c7912bb307ea66626a036",
+    "genmodel_agent/diagnostics.py": "df33a33d0c0d13e77593a5b077578d1a94b0ffb3cf6b1dd7f91d8d0408d0fb5b",
+    "genmodel_agent/evaluation.py": "edf1c0d677f94ccf197a3792b6b9767f57726e1af1c2f7ecd57b639b4811269c",
+    "genmodel_agent/evaluation_contract.py": "3636bb49ef730f3e9b4c4a891fbb3adab6e961e587529f941afa778e8764d2c5",
+    "genmodel_agent/evaluation_data.py": "0534db535a2204a4b82a8b7a7fb7bdbf6f3b857e655999d34eab2fe155c5c70a",
+    "genmodel_agent/evaluation_metrics.py": "c19a1df4c1d9bb8873c44d222545ddff36e15b15e44cf2be520af8ab9f6ad1a9",
+    "genmodel_agent/evidence_policy.py": "75a572682d2e43f4aceba124d8c533b103e1c5602cb793ce9d00e49ed6896375",
+    "genmodel_agent/execution.py": "10196f181e7a0fade0a2f0f4f631bad4e0beb5689143799263e3dac03509e7a3",
+    "genmodel_agent/flow_trainer.py": "a0752945adaedf8eba2b123ef2ffbd21af323073488e1319cf182ac2948dd6fb",
+    "genmodel_agent/flows.py": "12de1051c5f1a5d9fd54b6e9610b1a51613a9691b06286a1dfbdd21d6f0279c2",
+    "genmodel_agent/gan_trainer.py": "3fe4b0decd87b8c8f874148ce76eb32ce367e13f1af26376045baa0921aa64ba",
+    "genmodel_agent/image_assessment.py": "5c5260f16849aae0b41ae8cb482f25d4b8124cf33dc0192668a4a60b40ef3fae",
+    "genmodel_agent/models.py": "0ed51d4480d0230fdfca15a093f1b5fa55deef300b3c35c2c41398d199dd5be6",
+    "genmodel_agent/pipeline.py": "1388b4a14acac0bf4d21f24439235407aa5cd40ad0f7f1b11c216f13f95b308d",
+    "genmodel_agent/planner_backend.py": "a65ed95ba39f8646a269a2eedab55bd084a350eab76a841e1937e122f54b2ccd",
+    "genmodel_agent/planning.py": "a35263e86edf5295731a37c64e243c6bbcd74b168e9422249ed960401d02bb69",
+    "genmodel_agent/profile.py": "f2f5735579af63487995eb6e382f63399ff33a6fe2956e178a0489ed0ff8fca2",
+    "genmodel_agent/trainer.py": "a182e114333f000f316c174e00532bf61ab62c118d8be6278369a5f1b9b81b62",
+    "genmodel_agent/training_data.py": "7b852467facef009ac2bfc2de9fc3af1c6b2d7c44e5a95aa7ba7d803d73afcea"
+  }
+}

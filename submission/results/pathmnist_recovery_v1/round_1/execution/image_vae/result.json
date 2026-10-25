@@ -1,0 +1,41 @@
+{
+  "status": "trained",
+  "model": "image_vae",
+  "device": "mps",
+  "best_epoch": 13,
+  "best_validation_negative_elbo": -2518.2602662060176,
+  "epochs_completed": 17,
+  "stop_reason": "early_stopping",
+  "generated_samples": 2500,
+  "elapsed_seconds": 442.33867141697556,
+  "train_observations": 89996,
+  "validation_observations": 10004,
+  "test_used": false,
+  "quality_evaluation_complete": false,
+  "trainer_contract": {
+    "version": "1.0",
+    "implemented": true,
+    "architecture": "Two stride-2 convolutions, a hidden projection, diagonal-Gaussian encoder, transposed-convolution decoder.",
+    "image_support": "uint8 2D images with 1 or 3 channels; height and width divisible by 4, at most 64.",
+    "likelihood": "Fixed standard deviation 0.1 Gaussian on pixels scaled by 255; beta=1 ELBO.",
+    "generation": "Standard-normal latent, Gaussian decoder draws clipped to [0,1]; decoder means also saved separately.",
+    "conditioning": "One-hot class labels concatenated in encoder and decoder; balanced generation across observed classes."
+  },
+  "common_contract": {
+    "optimizer": "VAE default: Adam (betas 0.9, 0.999); gradient norm clipped to 10; float32. GAN uses its explicit per-model optimizer contract.",
+    "validation": "VAE only: one fixed-seed Monte Carlo ELBO estimate per validation observation; lowest complete validation loss selects checkpoint.",
+    "training": "Plan supplies latent_dim, hidden_dim, batch_size, epochs, learning_rate, patience, max_minutes, selected_features, generate_samples.",
+    "resource_limits": "Cooperative batch-boundary checks plus parent wall-time/RSS supervision. MPS driver allocation is checked by the worker. These are monitored limits, not OS reservation guarantees."
+  },
+  "limitations": [
+    "Training diagnostics are not evidence of synthetic-data quality or downstream utility.",
+    "Downstream evaluation is pending.",
+    "Seeds are recorded; numerical identity across devices/library versions is not guaranteed."
+  ],
+  "supervision": {
+    "exit_code": 0,
+    "limit_triggered": null,
+    "peak_worker_rss_bytes": 767180800,
+    "wall_seconds": 444.24358954199124
+  }
+}

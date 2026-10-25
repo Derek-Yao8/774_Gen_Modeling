@@ -1,0 +1,231 @@
+{
+  "status": "ready",
+  "explanation": "Propose one controlled conditional image GAN revision from scratch: halve learning_rate to 0.0001 while preserving architecture, batch size, epoch limit, patience, preprocessing, task, split and evaluation. Validation quality and augmentation utility remain inadequate; the late checkpoint-score fluctuation supports testing a smaller optimization step, without promising improvement. Allocate the remaining 30-minute training ceiling to this single candidate.",
+  "questions": [],
+  "plan": {
+    "task": "class_balancing",
+    "objective_interpretation": "Generate labeled PathMNIST images for augmentation and compare real-plus-synthetic classifiers against real-only training and class-matched real resampling. This task includes augmentation; the modest observed imbalance does not itself establish a need for balancing. Use validation evidence to select, revise or stop before a frozen final test.",
+    "evidence": [
+      "The official training profile contains 89,996 finite uint8 RGB images of shape 28x28x3 and range 0..255. Both spatial dimensions meet trainer contract 1.0.",
+      "label_0 is complete with nine categorical classes; majority-to-minority frequency ratio is approximately 1.634. Preserve official publisher partitions.",
+      "Output validity passed for both previous candidates: 2,500 uint8 images each with expected shape and no reported validity errors. Validity does not establish sample quality.",
+      "GAN fit_diagnostics report validation_feature_wasserstein improving from 0.435429 at epoch 1 to 0.254423 at epoch 13, then worsening to 0.278949 at epoch 14. Training stopped at a wall-time limit; this does not establish convergence or diagnose mode collapse.",
+      "GAN sample-quality feature_wasserstein ratio was 2.722451 and diversity ratio 0.791538; both failed their existing screens, and every per-class combined screen failed. Texture energy discrepancy was 1.193572 versus real-reference median 0.044035; pixel-PCA energy discrepancy was 0.417568 versus 0.029334. These supplementary comparisons have no acceptance cutoff.",
+      "GAN validation_macro_f1_proxy delta versus real-only was -0.020852 with paired 95% interval [-0.047452,0.004382]; versus class-matched resampling it was -0.043545 with interval [-0.067725,-0.021875]. These validation comparisons do not support augmentation benefit.",
+      "VAE validation_negative_elbo was best at epoch 13; from epochs 13 to 17 training negative ELBO decreased by 12.939577 while validation negative ELBO increased by 1.556514. This is compatible with overfitting, without proving its cause. Its fidelity ratio 4.004554, diversity ratio 0.791698 and negative validation utility provide no reason simply to extend identical training.",
+      "Both candidates had zero synthetic near and exact-duplicate fractions against the recorded training subset; this supplies no privacy guarantee. Visual review status was not supplied.",
+      "Remaining_training_minutes and round_allowance_minutes are both 30. MPS is available; the approximately 4.6 GB available-memory snapshot is not a reserved allocation."
+    ],
+    "models": [
+      {
+        "name": "image_gan",
+        "reason": "Retain the conditional GAN as the sole revision candidate because its contracted checkpoint score improved substantially through epoch 13 and its pooled-feature and texture discrepancies were smaller than the VAE's, although both models failed quality screens and neither established augmentation benefit. Test a smaller optimization step against the observed late checkpoint-score fluctuation. This comparison does not establish overall perceptual superiority: the GAN pixel-PCA discrepancy was larger.",
+        "preprocessing": "scale_pixels_minus1_1",
+        "likelihood": "implicit",
+        "conditional": true,
+        "latent_dim": 64,
+        "hidden_dim": 128,
+        "batch_size": 64,
+        "epochs": 20,
+        "learning_rate": 0.0001,
+        "patience": 4,
+        "max_minutes": 30,
+        "selected_features": 0,
+        "generate_samples": 2500,
+        "hyperparameter_rationale": "The sole scientific setting change is learning_rate 0.0002 to 0.0001 for both optimizers. fit_diagnostics validation_feature_wasserstein decreased from 0.292296 at epoch 10 to 0.254423 at epoch 13, then increased to 0.278949 at epoch 14. Together with feature_wasserstein ratio 2.722451, diversity ratio 0.791538 and negative synthetic-versus-resampling validation utility, this justifies a bounded test of smaller updates rather than an identical rerun. Predicted effect: smaller steps may reduce checkpoint-score fluctuations and improve conditional distribution matching. Competing explanation: finite-subset variation, insufficient training or architectural limits may explain the fluctuation and discrepancies; a smaller rate may instead slow learning and leave diversity or utility unchanged or worse. Generator/discriminator loss magnitudes do not prove imbalance or collapse. Preserve latent_dim 64 for noise capacity, hidden_dim 128 for moderate network width, batch_size 64 for the previously exercised memory setting, epochs 20 and patience 4 to isolate the optimization change. Preserve all pixels, selected_features 0 and 2,500 generated samples to maintain the augmentation dose. The max_minutes change from 15 to 30 is a resource ceiling change, concentrating the explicitly supplied remaining allowance on one candidate; it is not an estimated runtime or an epoch extension. Start from scratch. Scale pixels to [-1,1] and use complete label_0 conditioning under trainer contract 1.0. Separate Adam optimizers use required betas (0.5,0.999), float32 and gradient norm clipping 10, with one discriminator update followed by one non-saturating generator update. Select the minimum contracted pooled-feature validation Wasserstein score using fixed up-to-512 training/validation subsets, training-only scaler, fixed latent draws matching validation labels and aggregate/per-class discrepancies. This score is neither ELBO nor FID and does not establish usefulness. Generate standard-normal latent draws through tanh, rescale and round to uint8 without observation noise; final labels cycle across observed classes."
+      }
+    ],
+    "excluded_models": [
+      {
+        "name": "image_vae",
+        "reason": "Do not allocate another run in this round. Despite valid output and improving training fit, validation_negative_elbo stopped improving after epoch 13, sample fidelity and diversity failed, texture discrepancy was large, and validation augmentation was worse than real-only by -0.047373 and resampling by -0.070067, with both intervals negative. Fixed Gaussian observation noise or architectural limitations are possible competing explanations, not established causes; this contract does not expose likelihood or beta changes."
+      },
+      {
+        "name": "count_vae",
+        "reason": "Requires raw 10x MTX count data and negative-binomial raw count targets. RGB image pixels are incompatible, despite being integers."
+      },
+      {
+        "name": "planar_flow",
+        "reason": "Supports only unconditional standalone continuous maximum-likelihood generation of low-dimensional selected gene panels from raw 10x counts after fixed log(count + uniform jitter) dequantization and training-only standardization. Its continuous log-expression output is incompatible with labeled image augmentation."
+      },
+      {
+        "name": "radial_flow",
+        "reason": "Supports only unconditional continuous log-dequantized expression generation on a low-dimensional gene panel, not images or class balancing. Its analytic inverse does not resolve the modality and task mismatch."
+      },
+      {
+        "name": "realnvp_flow",
+        "reason": "Supports only unconditional continuous log-dequantized expression generation on a low-dimensional gene panel, not conditional RGB image augmentation."
+      },
+      {
+        "name": "continuous_flow",
+        "reason": "Deprecated unavailable placeholder explicitly marked unimplemented; cannot be selected."
+      }
+    ],
+    "split": {
+      "strategy": "official",
+      "train_fraction": 0,
+      "validation_fraction": 0,
+      "test_fraction": 0,
+      "fit_preprocessing_on": "train",
+      "seed": 42
+    },
+    "evaluation": {
+      "metrics": [
+        "distribution_fidelity",
+        "diversity",
+        "nearest_neighbor_overlap",
+        "real_test_macro_f1",
+        "per_class_recall"
+      ],
+      "baseline": "real_only_classifier",
+      "success_criteria": "Apply evaluation contract 2.0. Validate finite outputs, exact expected image shapes, uint8 range and label alignment first; invalid output means do_not_use. For distribution_fidelity, use training-fitted standardized 4x4 pooled pixel/channel-variation features and mean marginal Wasserstein discrepancy overall and per class. Compare against equal-sized training-resampling and held-out-real references over ten fixed-seed draws, reporting medians and reference ranges rather than confidence intervals. Apply only the specified heuristic discrepancy screen: synthetic discrepancy <=1.1 times median real-reference discrepancy with absolute tolerance 1e-8. For diversity, compare median pairwise distances in those standardized features against equal-sized held-out samples using the specified 0.9..1.1 ratio screen. For nearest_neighbor_overlap, use a fixed training subset and its leave-one-out first-percentile distance threshold; report synthetic and held-out near rates and exact duplicate rates without privacy claims. Supplement these metrics with the contracted joint empirical energy distances for local-gradient statistics and training-only pixel PCA of up to 32 components, reference draws and conditional bootstrap intervals without additional cutoffs. Review fixed-seed per-class real/generated visual packets with source indices and explicit review status; these are not validated histology scores. Evaluate each model's augmentation separately using the fixed C=1 logistic classifier on training-fitted pooled-image features: real-only, real-plus-synthetic and class-matched real-resampling augmentation controls, matching the synthetic arm's added labels and sample counts. Report macro-F1 and per-class recall with paired class-stratified bootstrap comparisons. Use validation mode for selection and controlled revision or stopping; adversarial loss, ELBO and GAN checkpoint scores do not establish augmentation benefit. Freeze the chosen configuration and comparisons before final mode evaluates the official test once. Only a converged frozen comparison with positive paired intervals against both real-only and resampling supports task-scoped limited_use; a negative interval supports task-scoped do_not_use, and otherwise evidence remains insufficient_evidence. Quality screens alone never establish usability. The legacy utility_gate is descriptive, not the decision gate. Any revision must use remaining allocated time; if none remains, stop and propose a separately budgeted follow-up rather than exceed the ceiling.",
+      "final_test_once": true
+    },
+    "downstream_use": "Synthetic images remain provisional research augmentation candidates. The existing evidence is validation-only and does not support deployment. Any eventual support applies only to the measured pooled-feature logistic classification task; neither appearance nor classification performance establishes clinical validity.",
+    "limitations": [
+      "This revision is a proposal, not a training result. No improvement is promised.",
+      "One model receives a hard 30-minute training ceiling, within the supplied remaining allowance. No executor pilot caps are assumed enabled; they require an explicit execution flag.",
+      "The previous GAN generator stopped at a wall-time limit. The converged flag on its classifier utility comparison does not establish generator convergence.",
+      "A smaller learning rate may slow training. Keep epochs and patience unchanged; do not silently extend training or alter acceptance criteria.",
+      "Conditional generation cycles approximately evenly across nine classes; this does not equalize final real-plus-synthetic class totals.",
+      "Fit all learned feature transforms, scalers and PCA on official training data only. Validation guides this controlled revision; reserve the official test for one frozen final evaluation.",
+      "Bootstrap intervals condition on the fitted runs and exclude training-seed uncertainty. Repeated validation selection can introduce selection optimism.",
+      "Pooled features, local gradients and pixel PCA can miss histological structure. Supplementary energy distances have no acceptance cutoffs, and explicit visual-review status remains necessary.",
+      "Training-overlap diagnostics provide no privacy guarantee. Quality screens are exploratory workflow controls and never establish usability.",
+      "Classifier controls, visual review and supplementary evaluation require their own reported completion and resource accounting. If this controlled revision does not provide supporting evidence, stop rather than relax screens or repeat an identical configuration."
+    ]
+  },
+  "schema_version": "1.0",
+  "catalog_version": 2,
+  "budget": {
+    "total_minutes": 30,
+    "max_epochs": 100,
+    "max_samples": 5000
+  },
+  "validation_history": [],
+  "backend": "codex_cli_chatgpt",
+  "source_profile_sha256": "ed1495fc648a6219323d19d798ba51872b9d5cfe312447fdbddf8d8b77972032",
+  "objective": {
+    "text": "Generate labeled PathMNIST images and determine whether adding synthetic images improves classification relative to real-only training and class-matched real resampling. Select appropriate compatible generative models and hyperparameters from the available catalog without a prespecified model. Evaluate output validity, model fit, overall and per-class image quality, diversity, training overlap, and downstream augmentation utility. Use measured validation evidence for a controlled revision or stopping. Report limitations and do not infer clinical validity from appearance or classifier performance.",
+    "interpretation_status": "pending_planner"
+  },
+  "training_executed": false,
+  "execution_ready": true,
+  "execution_readiness_note": "Trainer available; source integrity, input support and resources are rechecked by the executor.",
+  "trainer_contracts": {
+    "image_vae": {
+      "version": "1.0",
+      "implemented": true,
+      "architecture": "Two stride-2 convolutions, a hidden projection, diagonal-Gaussian encoder, transposed-convolution decoder.",
+      "image_support": "uint8 2D images with 1 or 3 channels; height and width divisible by 4, at most 64.",
+      "likelihood": "Fixed standard deviation 0.1 Gaussian on pixels scaled by 255; beta=1 ELBO.",
+      "generation": "Standard-normal latent, Gaussian decoder draws clipped to [0,1]; decoder means also saved separately.",
+      "conditioning": "One-hot class labels concatenated in encoder and decoder; balanced generation across observed classes."
+    },
+    "count_vae": {
+      "version": "1.0",
+      "implemented": true,
+      "architecture": "Two hidden layers, diagonal-Gaussian encoder, softmax proportions decoder, gene-wise learned dispersion.",
+      "preprocessing": "Training-only mean-binned standardized dispersion gene selection; raw count targets; log1p counts for encoder only.",
+      "likelihood": "Negative binomial with mean=selected-panel library size * decoded proportions; beta=1 ELBO.",
+      "generation": "Standard-normal latent; resample selected-panel library sizes from training cells (within class if conditional); gamma-Poisson draws on CPU.",
+      "conditioning": "Optional one-hot class labels in encoder and decoder; balanced generated classes."
+    },
+    "image_gan": {
+      "version": "1.0",
+      "implemented": true,
+      "architecture": "Latent/one-hot labels projected through two linear layers and two transposed convolutions with tanh; discriminator has two convolutions and two linear layers. No batch normalization.",
+      "image_support": "Same uint8 2D 1/3-channel image layouts as image VAE; scale to [-1,1].",
+      "tasks": "Generation and class balancing/augmentation only; no encoder or representation learning.",
+      "likelihood": "Implicit; no likelihood, reconstruction loss or ELBO is computed.",
+      "optimizer": "Separate Adam optimizers, both use plan learning_rate, betas (0.5,0.999); gradient norm clipping 10; float32. Overrides VAE defaults.",
+      "training": "One discriminator update with detached fake samples followed by one non-saturating generator update with discriminator parameters frozen; stable BCE-with-logits losses.",
+      "conditioning": "Optional one-hot labels in generator input and spatial label channels in discriminator. Fake training labels match each real batch; final generation cycles evenly across observed training classes.",
+      "generation": "Standard-normal latent passed through generator, tanh rescaled/rounded to uint8; no extra observation noise or decoder means.",
+      "validation": "Checkpoint/early stopping minimizes pooled-image feature Wasserstein distance on fixed up-to-512 training and validation subsets. Scaler fits training only; fixed latent draws match validation labels. Average aggregate discrepancy and per-class discrepancies when conditional. Same validation score each epoch, not adversarial loss or ELBO; not FID or proof of usefulness."
+    },
+    "continuous_flow": {
+      "implemented": false,
+      "reason": "Deprecated generic placeholder. Select planar_flow, radial_flow or realnvp_flow explicitly."
+    },
+    "planar_flow": {
+      "version": "1.0",
+      "implemented": true,
+      "family": "planar_flow",
+      "architecture": "Standalone invertible data-to-standard-normal flow; learned diagonal affine transform followed by flow_layers transforms. No VAE.",
+      "preprocessing": "Select 2..128 genes using training-only dispersion ranking. Deterministic per-cell uniform dequantization, log(count+U), then training-only mean/std. No library normalization. latent_dim equals selected_features.",
+      "training": "Exact change-of-variables density of standardized continuous coordinates; Adam betas (0.9,0.999), gradient clip 10. Validation NLL selects best checkpoint and patience. This is not an integer count likelihood or ELBO.",
+      "generation": "Normal latent, reverse transforms; planar uses 64-step monotone bisection and checks inverse residual, radial and affine coupling use analytic inverses. Undo training standardization; save continuous log-expression samples without rounding or exponentiation.",
+      "tasks": "Unconditional data_generation only. Coupling hidden_dim sets MLP width; planar/radial hidden_dim=16 is an unused schema placeholder.",
+      "evaluation": {
+        "version": "1.0",
+        "domain": "Continuous log(count + fixed per-cell Uniform[1e-6,1) jitter), on a training-selected gene panel. Not raw integer counts or normalized expression.",
+        "fidelity": "Training-standardized mean marginal Wasserstein distance and correlation MAE on up to 64 training-variable genes; compare equal-size independently dequantized real references using existing 1.1x heuristic.",
+        "diversity_overlap": "Same distance-ratio and training-reference overlap diagnostics in standardized continuous log-expression coordinates. No exact-zero/count-validity claims.",
+        "utility": "No supervised utility for this unconditional generation objective. No biological or privacy guarantee."
+      },
+      "limits": "Planar/radial limited expressiveness; low-dimensional selected panel only. Dequantization changes the target and removes exact zeros. Inverse failures/nonfinite outputs fail the run."
+    },
+    "radial_flow": {
+      "version": "1.0",
+      "implemented": true,
+      "family": "radial_flow",
+      "architecture": "Standalone invertible data-to-standard-normal flow; learned diagonal affine transform followed by flow_layers transforms. No VAE.",
+      "preprocessing": "Select 2..128 genes using training-only dispersion ranking. Deterministic per-cell uniform dequantization, log(count+U), then training-only mean/std. No library normalization. latent_dim equals selected_features.",
+      "training": "Exact change-of-variables density of standardized continuous coordinates; Adam betas (0.9,0.999), gradient clip 10. Validation NLL selects best checkpoint and patience. This is not an integer count likelihood or ELBO.",
+      "generation": "Normal latent, reverse transforms; planar uses 64-step monotone bisection and checks inverse residual, radial and affine coupling use analytic inverses. Undo training standardization; save continuous log-expression samples without rounding or exponentiation.",
+      "tasks": "Unconditional data_generation only. Coupling hidden_dim sets MLP width; planar/radial hidden_dim=16 is an unused schema placeholder.",
+      "evaluation": {
+        "version": "1.0",
+        "domain": "Continuous log(count + fixed per-cell Uniform[1e-6,1) jitter), on a training-selected gene panel. Not raw integer counts or normalized expression.",
+        "fidelity": "Training-standardized mean marginal Wasserstein distance and correlation MAE on up to 64 training-variable genes; compare equal-size independently dequantized real references using existing 1.1x heuristic.",
+        "diversity_overlap": "Same distance-ratio and training-reference overlap diagnostics in standardized continuous log-expression coordinates. No exact-zero/count-validity claims.",
+        "utility": "No supervised utility for this unconditional generation objective. No biological or privacy guarantee."
+      },
+      "limits": "Planar/radial limited expressiveness; low-dimensional selected panel only. Dequantization changes the target and removes exact zeros. Inverse failures/nonfinite outputs fail the run."
+    },
+    "realnvp_flow": {
+      "version": "1.0",
+      "implemented": true,
+      "family": "realnvp_flow",
+      "architecture": "Standalone invertible data-to-standard-normal flow; learned diagonal affine transform followed by flow_layers transforms. No VAE.",
+      "preprocessing": "Select 2..128 genes using training-only dispersion ranking. Deterministic per-cell uniform dequantization, log(count+U), then training-only mean/std. No library normalization. latent_dim equals selected_features.",
+      "training": "Exact change-of-variables density of standardized continuous coordinates; Adam betas (0.9,0.999), gradient clip 10. Validation NLL selects best checkpoint and patience. This is not an integer count likelihood or ELBO.",
+      "generation": "Normal latent, reverse transforms; planar uses 64-step monotone bisection and checks inverse residual, radial and affine coupling use analytic inverses. Undo training standardization; save continuous log-expression samples without rounding or exponentiation.",
+      "tasks": "Unconditional data_generation only. Coupling hidden_dim sets MLP width; planar/radial hidden_dim=16 is an unused schema placeholder.",
+      "evaluation": {
+        "version": "1.0",
+        "domain": "Continuous log(count + fixed per-cell Uniform[1e-6,1) jitter), on a training-selected gene panel. Not raw integer counts or normalized expression.",
+        "fidelity": "Training-standardized mean marginal Wasserstein distance and correlation MAE on up to 64 training-variable genes; compare equal-size independently dequantized real references using existing 1.1x heuristic.",
+        "diversity_overlap": "Same distance-ratio and training-reference overlap diagnostics in standardized continuous log-expression coordinates. No exact-zero/count-validity claims.",
+        "utility": "No supervised utility for this unconditional generation objective. No biological or privacy guarantee."
+      },
+      "limits": "Planar/radial limited expressiveness; low-dimensional selected panel only. Dequantization changes the target and removes exact zeros. Inverse failures/nonfinite outputs fail the run."
+    }
+  },
+  "evaluation_contract": {
+    "version": "2.0",
+    "validity": "Finite samples, exact expected shape, image uint8 range or nonnegative integer counts, label/gene alignment.",
+    "distribution_fidelity": {
+      "image": "Mean marginal Wasserstein distance in training-fitted standardized 4x4 pooled pixel/channel-variation features; includes per-class checks when labels exist. Not FID or a biological/perceptual score.",
+      "counts": "Mean absolute differences in log1p gene means, log1p gene variances, zero fractions, log1p panel-total Wasserstein distance, and correlations among up to 64 training-variable genes.",
+      "reference": "Equal-sized training resampling and held-out real observations, ten fixed-seed reference draws; report median and reference range, not a confidence interval.",
+      "screen": "Synthetic discrepancy <= 1.1 times median real-reference discrepancy, with absolute tolerance 1e-8. A heuristic screen, not a calibrated scientific acceptance guarantee."
+    },
+    "diversity": "Median pairwise Euclidean distance in training-standardized pooled-image/log1p-count features; compare to equal-sized held-out samples; ratio screen 0.9..1.1.",
+    "nearest_neighbor_overlap": "Nearest distances to a fixed training subset; near threshold is its leave-one-out 1st percentile. Report synthetic and held-out rates, plus exact duplicate rates against the same training subset. No privacy guarantee.",
+    "real_test_macro_f1": "Real-only vs real+synthetic fixed C=1 logistic regression on training-fitted pooled-image features. Validation mode computes a validation proxy; only final mode computes test scores. Include class-matched real-resampling augmentation control.",
+    "per_class_recall": "Recall on the same held-out observations with fixed training-class vocabulary; paired, class-stratified bootstrap for macro-F1 differences.",
+    "heldout_representation_quality": "Frozen unconditional VAE posterior means vs training-fitted PCA at the same latent dimension; training-standardized embeddings with identical logistic probes and held-out labels. Unlabeled data are explicitly unsupported for this utility test.",
+    "decision_rules": "Evidence policy v2: invalid output do_not_use; pilots, validation and incomplete evidence insufficient_evidence. No conjunction of quality thresholds establishes usability. Frozen converged task comparison with positive paired interval (and positive comparison against resampling for augmentation) supports task-scoped limited_use; a negative interval supports task-scoped do_not_use. Otherwise insufficient_evidence. No absolute F1 improvement threshold. Generation without a measured downstream task cannot establish biological usefulness.",
+    "image_assessment": "Supplementary joint empirical energy distances in training-standardized local-gradient mean/std and training-only pixel PCA (up to 32 components); reference draws and conditional bootstrap intervals, without cutoffs. Fixed-seed per-class real/generated visual packets record source indices and explicit review status. Not FID or a validated histology score.",
+    "utility_gate": "Legacy descriptive flag only, not the recommendation gate: Macro-F1 improvement >=0.01, paired 95% bootstrap lower bound >0, and no class recall loss >0.02; all arms converged. Representation compares VAE to PCA."
+  },
+  "flow_evaluation_contract": {
+    "version": "1.0",
+    "domain": "Continuous log(count + fixed per-cell Uniform[1e-6,1) jitter), on a training-selected gene panel. Not raw integer counts or normalized expression.",
+    "fidelity": "Training-standardized mean marginal Wasserstein distance and correlation MAE on up to 64 training-variable genes; compare equal-size independently dequantized real references using existing 1.1x heuristic.",
+    "diversity_overlap": "Same distance-ratio and training-reference overlap diagnostics in standardized continuous log-expression coordinates. No exact-zero/count-validity claims.",
+    "utility": "No supervised utility for this unconditional generation objective. No biological or privacy guarantee."
+  }
+}

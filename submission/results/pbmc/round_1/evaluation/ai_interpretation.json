@@ -1,0 +1,33 @@
+{
+  "status": "completed",
+  "models": {
+    "realnvp_flow": {
+      "decision": "insufficient_evidence",
+      "interpretation": "The generated array passes the recorded validity checks (1,000 observations, 32 features); this establishes structural validity only. Sample quality is mixed: continuous-feature Wasserstein discrepancy is 0.320 versus a real-reference median of 0.0967 (3.31 times higher), failing its heuristic screen. Correlation discrepancy is near the reference median (ratio 1.007), and diversity is similar by median distance (ratio 1.038); both pass their screens. The overall quality screen fails. No generated exact duplicates or near matches were recorded against the training reference subset, which does not establish privacy. Training NLL decreased from 45.52 to 41.72, while validation NLL ended above its epoch-1 minimum (46.54 versus 45.21). This divergence is consistent with a possible generalization gap, but does not establish its cause or explain sample quality. These NLL values describe standardized continuous log-dequantized expression, not count likelihood. Downstream utility was not evaluated, so justified use is limited to exploratory development and designing task-specific evaluations; these results establish no downstream or biological benefit. A frozen final assessment remains pending.",
+      "evidence_keys": [
+        "recommendation.decision",
+        "recommendation.reason",
+        "validity",
+        "quality.fidelity.continuous_feature_wasserstein",
+        "quality.fidelity.continuous_correlation_mae",
+        "quality.diversity",
+        "quality.overlap",
+        "quality.quality_screen_passed",
+        "counts",
+        "output_domain",
+        "fit_diagnostics.series",
+        "fit_diagnostics.limitations",
+        "assessment.downstream_utility"
+      ],
+      "limitations": [
+        "Samples are continuous log(count + uniform jitter), not integer counts or library-normalized expression; exact zeros and count likelihood cannot be inferred.",
+        "Quality comparisons use 405 matched samples. Bootstrap intervals condition on one fitted model and omit training-seed variation; reference ranges are not confidence intervals for differences.",
+        "The correlation-discrepancy bootstrap interval [0.07597, 0.08653] excludes its reported point estimate 0.05969. Its uncertainty summary warrants checking before drawing inferential conclusions.",
+        "Heuristic screens are exploratory, not empirically calibrated guarantees: failure does not prove universal unusability, and passing does not establish biological usefulness.",
+        "Overlap checks cover only the recorded training reference subset and provide no privacy guarantee.",
+        "Nine epochs of training and validation trends are development evidence, not final-test performance or proof of a training mechanism.",
+        "No task-specific utility comparison or per-class quality results were supplied; continuous-expression similarity alone establishes no biological benefit."
+      ]
+    }
+  }
+}

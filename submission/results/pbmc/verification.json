@@ -1,0 +1,22 @@
+{
+  "attempts": [
+    {
+      "round": 1,
+      "epochs": 9,
+      "samples": 1000,
+      "train": 1890,
+      "validation": 405,
+      "validation_nll": 45.21160970617224
+    },
+    {
+      "round": 2,
+      "epochs": 10,
+      "samples": 1000,
+      "train": 1890,
+      "validation": 405,
+      "validation_nll": 45.16524665738329
+    }
+  ],
+  "identical_gene_panel_preprocessing_and_splits": true,
+  "test_accessed": false
+}

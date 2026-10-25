@@ -1,0 +1,37 @@
+{
+  "status": "completed",
+  "models": {
+    "image_gan": {
+      "decision": "insufficient_evidence",
+      "interpretation": "Structural validity passed for 2,500 uint8 RGB images of shape 28\u00d728\u00d73; this establishes format validity only. Sample-quality measurements indicate mismatch: feature Wasserstein discrepancy was 0.3383 versus a real-reference median of 0.0665, and the diversity ratio was 0.6067. All nine class screens flagged concerns, with particularly low diversity ratios for classes 1 and 8. Texture and pixel-PCA discrepancies were 3.2471 and 3.4248, respectively, versus real-reference medians of 0.0440 and 0.0293; these describe differences in the selected representations and have no acceptance cutoff. Across six training epochs, generator loss decreased and discriminator loss increased, while validation feature Wasserstein reached its minimum at epoch 2 and subsequently worsened, although it finished below its initial value. These optimization trends do not establish a cause for the sample-quality findings or prove collapse. Downstream validation macro-F1 changed from 0.63366 to 0.62892 with synthetic augmentation: delta \u22120.00473, paired bootstrap 95% CI [\u22120.01949, 0.01551], which does not establish improvement or deterioration against real-only training. Real-resampling augmentation improved macro-F1 by 0.02269, CI [0.00858, 0.03839]; synthetic augmentation underperformed that control by 0.02743, CI [\u22120.04941, \u22120.00616], conditional on the evaluated training runs. Recall changes were mixed across classes. These results justify exploratory model development and controlled augmentation research, but do not establish a downstream benefit from this generator. Failed heuristic screens do not establish universal unusability.",
+      "evidence_keys": [
+        "recommendation.decision",
+        "validity",
+        "quality.fidelity.feature_wasserstein",
+        "quality.diversity",
+        "quality.per_class",
+        "quality.overlap",
+        "utility.macro_f1_delta",
+        "utility.paired_bootstrap_95_ci",
+        "utility.per_class",
+        "utility.resampling_control",
+        "utility.synthetic_vs_resampling_control",
+        "utility.evaluated_split",
+        "counts",
+        "fit_diagnostics",
+        "image_assessment.comparisons",
+        "image_assessment.limitations",
+        "visual_review.review_status"
+      ],
+      "limitations": [
+        "These are development validation results; a frozen final assessment is pending. Utility bootstrap intervals resample held-out observations and exclude training-seed uncertainty.",
+        "Quality bootstrap intervals condition on one fitted generator. Heuristic screens are exploratory, and reference ranges are not confidence intervals or calibrated acceptance guarantees.",
+        "Image features are not a validated histology representation; similarity or discrepancy in these features does not establish biological or clinical usefulness.",
+        "The visual packet is prepared but not yet reviewed; no images were inspected for this interpretation.",
+        "Zero measured near matches and exact duplicates apply only to the recorded training-reference subset and do not establish privacy.",
+        "Validity reports 2,500 observations, while counts.generated reports 2,048; quality comparisons use 512 matched samples. These differing scopes require reconciliation before assuming a common evaluation population.",
+        "Adversarial losses and six-epoch trends do not independently establish model fit, convergence of the generator, discriminator dominance, or mode collapse."
+      ]
+    }
+  }
+}

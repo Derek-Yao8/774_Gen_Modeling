@@ -1,0 +1,92 @@
+{
+  "plan": {
+    "task": "data_generation",
+    "objective_interpretation": "Generate continuous log-dequantized PBMC3K expression on a small training-selected gene panel for exploratory statistical analysis; assess fit, marginal distributions, correlations, diversity and training overlap without claiming biological or downstream usefulness.",
+    "evidence": [
+      "Raw 10x MTX input contains 2700 cells and 32738 genes, with no missing or infinite values; approximately 97.41% of entries are zero and 16104 features are constant.",
+      "No labels or existing splits are available. Preserve unconditional generation and the complete original random holdout split.",
+      "Previous validation output passed validity with 1000 finite, aligned 32-dimensional samples. This is separate from sample quality and utility.",
+      "continuous_feature_wasserstein was 0.319790 versus real-reference median 0.096676, ratio 3.307854, failing the existing screen. continuous_correlation_mae ratio 1.007367 and diversity ratio 1.038465 passed their screens. Recorded overlap diagnostics passed, with synthetic near fraction and exact duplicate fraction both zero; this is not a privacy guarantee.",
+      "fit_diagnostics observed nine epochs: train_nll decreased from 45.524153 to 41.723194, while validation_nll was best at epoch 1 (45.211610) and ended at 46.535739. Early stopping selected epoch 1; these are validation findings, not final-test results.",
+      "The remaining training allowance is 15 minutes. MPS is available; approximately 5.08 GB available memory at inspection is only a snapshot. The prior elapsed time is not a feasibility guarantee for the revision."
+    ],
+    "models": [
+      {
+        "name": "realnvp_flow",
+        "reason": "Its implemented version 1.0 contract matches unconditional continuous log-dequantized generation, with analytic inversion and coupling networks for joint dependencies. Revise the existing candidate rather than divide the remaining exploratory budget among models.",
+        "preprocessing": "log_dequantize_train_standardize",
+        "likelihood": "continuous",
+        "conditional": false,
+        "latent_dim": 32,
+        "hidden_dim": 32,
+        "batch_size": 64,
+        "epochs": 60,
+        "learning_rate": 0.0002,
+        "patience": 8,
+        "max_minutes": 15,
+        "selected_features": 32,
+        "generate_samples": 1000,
+        "hyperparameter_rationale": "Change exactly two scientific settings: learning_rate 0.001 to 0.0002 and coupling-network hidden_dim 64 to 32. fit_diagnostics show train_nll falling from 45.524153 at epoch 1 to 41.723194 at epoch 9, but validation_nll selecting epoch 1 at 45.211610 and ending at 46.535739; its epoch-5-to-9 change was only -0.017088. Together with failed continuous_feature_wasserstein (ratio 3.307854), this motivates testing slower optimization and lower capacity. Predicted effect: less rapid training-specific fitting and potentially better validation-selected marginals. Competing explanations include limited flow expressiveness, dequantization-induced marginal structure or holdout variability; lower capacity could worsen fit, and lower learning rate could merely delay learning. Correlation and diversity screens already passed, so improvement must not come at their expense. Preserve the identical 32-gene training-selected panel and its ordering, six coupling layers, batch size 64, 60-epoch ceiling, patience 8, and 1000 generated samples to limit confounding. latent_dim=32 equals selected_features, with no dimension reduction. Start training from scratch; use Adam betas (0.9,0.999), float32 and gradient clipping 10. Select the lowest validation continuous NLL checkpoint. Apply deterministic per-cell Uniform[1e-6,1) jitter, log(count+U), and training-only mean/std; do not library-normalize. Train by continuous change-of-variables maximum likelihood, not ELBO. Reverse transforms analytically, undo standardization and save continuous log-expression without exponentiation or rounding. The 15-minute ceiling is not a runtime estimate; no executor pilot cap is assumed. Falling NLL alone cannot demonstrate sample quality or utility.",
+        "flow_layers": 6
+      }
+    ],
+    "excluded_models": [
+      {
+        "name": "planar_flow",
+        "reason": "Implemented and compatible, but changing flow family would confound this targeted revision. Its limited expressiveness and checked 64-step numerical inverse offer no measured reason to prefer it here."
+      },
+      {
+        "name": "radial_flow",
+        "reason": "Implemented and analytically invertible, but limited radial expressiveness and the absence of comparative validation evidence do not justify dividing the remaining budget."
+      },
+      {
+        "name": "count_vae",
+        "reason": "Implemented for raw-count negative-binomial targets and integer generation. That output domain differs from the requested continuous log-dequantized expression density; its likelihood cannot be compared with this flow NLL."
+      },
+      {
+        "name": "continuous_flow",
+        "reason": "Deprecated unavailable placeholder with implemented=false; cannot be selected."
+      },
+      {
+        "name": "image_vae",
+        "reason": "Single-cell counts do not satisfy the supported uint8 2D image modality or Gaussian pixel likelihood."
+      },
+      {
+        "name": "image_gan",
+        "reason": "Single-cell counts do not satisfy its image modality. Its implicit image generation contract does not address the requested continuous expression density."
+      }
+    ],
+    "split": {
+      "strategy": "random_holdout",
+      "train_fraction": 0.7,
+      "validation_fraction": 0.15,
+      "test_fraction": 0.15,
+      "fit_preprocessing_on": "train",
+      "seed": 42
+    },
+    "evaluation": {
+      "metrics": [
+        "distribution_fidelity",
+        "diversity",
+        "nearest_neighbor_overlap"
+      ],
+      "baseline": "training_resampling",
+      "success_criteria": "Use explicit flow evaluation contract 1.0 for the continuous domain and evaluation contract 2.0 reference procedures and evidence policy. First require finite samples, expected 1000-by-32 shape, gene alignment and successful inversion; integer-count validity and zero-fraction checks do not apply. Record training and validation continuous NLL and select the checkpoint by validation NLL; NLL is not a count likelihood. Compare generated samples with equally transformed real cells using training-standardized mean marginal Wasserstein distance and correlation MAE on the selected 32 genes. Use equal-sized independently dequantized real references and ten fixed-seed reference draws, reporting medians and reference ranges, not confidence intervals. Apply the existing discrepancy screen of <=1.1 times median real-reference discrepancy with absolute tolerance 1e-8. Assess diversity with median pairwise Euclidean distances in standardized continuous log-expression coordinates and the existing held-out ratio screen 0.9..1.1. Assess overlap against a fixed training subset using its leave-one-out 1st-percentile near-distance threshold; report generated and held-out near rates and exact duplicate rates. Use matched sample sizes bounded by available held-out cells. A concrete statistical comparison is whether synthetic discrepancies meet these reference screens while diversity and overlap diagnostics remain recorded and interpretable; passing does not establish usefulness. Inspect validation NLL and these validation diagnostics before freezing the experiment. Inverse failures or nonfinite output fail the run and imply do_not_use; incomplete or budget-truncated evidence implies insufficient_evidence. Any controlled revision must use validation evidence, retain the test holdout and receive a separate budget. Evaluate the frozen final candidate on test once. No supervised utility or privacy conclusion is supported.",
+      "final_test_once": true
+    },
+    "downstream_use": "Provisional exploratory statistical analysis of the selected gene panel only. No downstream utility was measured. Statistical similarity cannot establish biological usefulness; task-scoped use requires a separately measured, converged downstream comparison under evidence policy v2.",
+    "limitations": [
+      "This revision is a proposal, not a training result. Prior findings came from validation; the final test remains reserved.",
+      "Compare revised and original validation NLL only with identical panel, preprocessing and data partition. Evaluate validity, model fit, sample quality and downstream utility separately.",
+      "Outputs are continuous log(count+uniform jitter) expression, not integer counts or normalized expression. Dequantization changes the target and removes exact zeros.",
+      "The 32-gene panel supports low-dimensional exploratory analysis only, not whole-transcriptome claims. No representation learning, conditioning or class balancing is supported by this flow.",
+      "The fit pattern suggests a testable optimization/capacity hypothesis, not a proven cause. Two simultaneous changes limit attribution between those settings.",
+      "Retain all original screens. If this revision fails and no further supported, testable change is justified within an explicit remaining allowance, stop rather than relax criteria.",
+      "Short-budget development evidence remains exploratory. Quality screens do not establish usability, biological benefit or privacy; no executor pilot caps are assumed.",
+      "Resource limits are monitored ceilings, not memory reservations or convergence guarantees."
+    ]
+  },
+  "pilot": false,
+  "overrides": [],
+  "pilot_subset_caps": null
+}

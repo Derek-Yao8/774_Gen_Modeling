@@ -1,0 +1,35 @@
+{
+  "fit_on": "train",
+  "pilot": false,
+  "test_used_for_training_or_selection": false,
+  "kind": "image",
+  "scaling": "uint8 / 255",
+  "original_shape": [
+    28,
+    28,
+    3
+  ],
+  "source_hashes": [
+    "81823f52dc622e69db2db4c72f8e8e617938dd6864d3c1f23d4e49724a28ea72"
+  ],
+  "official_test": "Reserved; arrays not loaded",
+  "label_column": "label_0",
+  "train_observations": 89996,
+  "validation_observations": 10004,
+  "classes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "shape": [
+    28,
+    28,
+    3
+  ]
+}

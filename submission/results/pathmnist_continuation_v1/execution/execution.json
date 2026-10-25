@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "pilot": false,
+  "models": [
+    {
+      "status": "trained",
+      "model": "image_gan",
+      "device": "mps",
+      "best_epoch": 2,
+      "best_validation_feature_wasserstein": 0.3890950488083704,
+      "epochs_completed": 6,
+      "stop_reason": "early_stopping",
+      "generated_samples": 2500,
+      "elapsed_seconds": 305.004508,
+      "train_observations": 89996,
+      "validation_observations": 10004,
+      "test_used": false,
+      "quality_evaluation_complete": false,
+      "trainer_contract": {
+        "version": "1.0",
+        "implemented": true,
+        "architecture": "Latent/one-hot labels projected through two linear layers and two transposed convolutions with tanh; discriminator has two convolutions and two linear layers. No batch normalization.",
+        "image_support": "Same uint8 2D 1/3-channel image layouts as image VAE; scale to [-1,1].",
+        "tasks": "Generation and class balancing/augmentation only; no encoder or representation learning.",
+        "likelihood": "Implicit; no likelihood, reconstruction loss or ELBO is computed.",
+        "optimizer": "Separate Adam optimizers, both use plan learning_rate, betas (0.5,0.999); gradient norm clipping 10; float32. Overrides VAE defaults.",
+        "training": "One discriminator update with detached fake samples followed by one non-saturating generator update with discriminator parameters frozen; stable BCE-with-logits losses.",
+        "conditioning": "Optional one-hot labels in generator input and spatial label channels in discriminator. Fake training labels match each real batch; final generation cycles evenly across observed training classes.",
+        "generation": "Standard-normal latent passed through generator, tanh rescaled/rounded to uint8; no extra observation noise or decoder means.",
+        "validation": "Checkpoint/early stopping minimizes pooled-image feature Wasserstein distance on fixed up-to-512 training and validation subsets. Scaler fits training only; fixed latent draws match validation labels. Average aggregate discrepancy and per-class discrepancies when conditional. Same validation score each epoch, not adversarial loss or ELBO; not FID or proof of usefulness."
+      },
+      "limitations": [
+        "Adversarial losses and pooled-feature checkpoint selection do not establish fidelity or downstream utility.",
+        "Validation is reused for checkpoint selection; final testing remains reserved.",
+        "GAN instability and mode collapse require independent quality/diversity checks."
+      ],
+      "supervision": {
+        "exit_code": 0,
+        "limit_triggered": null,
+        "peak_worker_rss_bytes": 832978944,
+        "wall_seconds": 307.257608625001
+      }
+    }
+  ],
+  "training_executed": true,
+  "quality_evaluation_complete": false,
+  "test_used": false,
+  "plan_sha256": "050cbbac0ab936367f1546bdd3e12ad03fb08873676665e0c6df593fe2beb50d",
+  "overrides": []
+}

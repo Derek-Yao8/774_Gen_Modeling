@@ -1,0 +1,2 @@
+2026-10-22T21:16:21.494676Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-22T21:16:26.490847Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out

@@ -1,0 +1,73 @@
+{
+  "artifact_hashes": {
+    "execution.json": "b2565f3b561259fa63adaa11493d0934c0156bac7d015bf2fe337a451542a75d",
+    "effective_plan.json": "3ec415b0229450ce57c0111f01f123b50e3f518522826cfd01f72da5c6029a90",
+    "source_modeling_plan.json": "050cbbac0ab936367f1546bdd3e12ad03fb08873676665e0c6df593fe2beb50d",
+    "input_profile.json": "ed1495fc648a6219323d19d798ba51872b9d5cfe312447fdbddf8d8b77972032",
+    "image_gan/job.json": "3b2cee579f7389e0889c81a0270ccc7c923eb6ea9a6ee84b302573043a108a8b",
+    "image_gan/result.json": "4c3067a71d3d591cc9c6f7c3a6633e0858981c927bc314ee9d62f427657a8d12",
+    "image_gan/preprocessing.json": "8c38a3bdd436ee8346043325c63aaaaef8467cd5586b0ecc54ca812e65c03df9",
+    "image_gan/splits.npz": "0bd1cfdb7040eec4ec4882f0efbb8554938429d545b584e74785169faaf70fb8",
+    "image_gan/best.pt": "ed19b65b6b66e8287b80c20e52757b5a148dc73c0a8913fe446aa9690f586918",
+    "image_gan/generated.npz": "d898f7389b5ee31302c7055cebd3be8f2c18bfdb27a83ab8259a73a74cd2f295",
+    "image_gan/history.json": "4f5456980ec82664da2cf9a4b5ab2a17a7e2133f741bfaccac6b57054bea6044"
+  },
+  "code_hashes": {
+    "evaluation.py": "edf1c0d677f94ccf197a3792b6b9767f57726e1af1c2f7ecd57b639b4811269c",
+    "evaluation_data.py": "0534db535a2204a4b82a8b7a7fb7bdbf6f3b857e655999d34eab2fe155c5c70a",
+    "evaluation_metrics.py": "c19a1df4c1d9bb8873c44d222545ddff36e15b15e44cf2be520af8ab9f6ad1a9",
+    "evaluation_contract.py": "3636bb49ef730f3e9b4c4a891fbb3adab6e961e587529f941afa778e8764d2c5",
+    "models.py": "0ed51d4480d0230fdfca15a093f1b5fa55deef300b3c35c2c41398d199dd5be6",
+    "data.py": "c47e936baf96343c5564f7ecf576ed5997ebd9fbc46c7912bb307ea66626a036",
+    "training_data.py": "7b852467facef009ac2bfc2de9fc3af1c6b2d7c44e5a95aa7ba7d803d73afcea",
+    "flows.py": "12de1051c5f1a5d9fd54b6e9610b1a51613a9691b06286a1dfbdd21d6f0279c2",
+    "diagnostics.py": "df33a33d0c0d13e77593a5b077578d1a94b0ffb3cf6b1dd7f91d8d0408d0fb5b",
+    "evidence_policy.py": "75a572682d2e43f4aceba124d8c533b103e1c5602cb793ce9d00e49ed6896375",
+    "image_assessment.py": "5c5260f16849aae0b41ae8cb482f25d4b8124cf33dc0192668a4a60b40ef3fae"
+  },
+  "contract": {
+    "version": "2.0",
+    "validity": "Finite samples, exact expected shape, image uint8 range or nonnegative integer counts, label/gene alignment.",
+    "distribution_fidelity": {
+      "image": "Mean marginal Wasserstein distance in training-fitted standardized 4x4 pooled pixel/channel-variation features; includes per-class checks when labels exist. Not FID or a biological/perceptual score.",
+      "counts": "Mean absolute differences in log1p gene means, log1p gene variances, zero fractions, log1p panel-total Wasserstein distance, and correlations among up to 64 training-variable genes.",
+      "reference": "Equal-sized training resampling and held-out real observations, ten fixed-seed reference draws; report median and reference range, not a confidence interval.",
+      "screen": "Synthetic discrepancy <= 1.1 times median real-reference discrepancy, with absolute tolerance 1e-8. A heuristic screen, not a calibrated scientific acceptance guarantee."
+    },
+    "diversity": "Median pairwise Euclidean distance in training-standardized pooled-image/log1p-count features; compare to equal-sized held-out samples; ratio screen 0.9..1.1.",
+    "nearest_neighbor_overlap": "Nearest distances to a fixed training subset; near threshold is its leave-one-out 1st percentile. Report synthetic and held-out rates, plus exact duplicate rates against the same training subset. No privacy guarantee.",
+    "real_test_macro_f1": "Real-only vs real+synthetic fixed C=1 logistic regression on training-fitted pooled-image features. Validation mode computes a validation proxy; only final mode computes test scores. Include class-matched real-resampling augmentation control.",
+    "per_class_recall": "Recall on the same held-out observations with fixed training-class vocabulary; paired, class-stratified bootstrap for macro-F1 differences.",
+    "heldout_representation_quality": "Frozen unconditional VAE posterior means vs training-fitted PCA at the same latent dimension; training-standardized embeddings with identical logistic probes and held-out labels. Unlabeled data are explicitly unsupported for this utility test.",
+    "decision_rules": "Evidence policy v2: invalid output do_not_use; pilots, validation and incomplete evidence insufficient_evidence. No conjunction of quality thresholds establishes usability. Frozen converged task comparison with positive paired interval (and positive comparison against resampling for augmentation) supports task-scoped limited_use; a negative interval supports task-scoped do_not_use. Otherwise insufficient_evidence. No absolute F1 improvement threshold. Generation without a measured downstream task cannot establish biological usefulness.",
+    "image_assessment": "Supplementary joint empirical energy distances in training-standardized local-gradient mean/std and training-only pixel PCA (up to 32 components); reference draws and conditional bootstrap intervals, without cutoffs. Fixed-seed per-class real/generated visual packets record source indices and explicit review status. Not FID or a validated histology score.",
+    "utility_gate": "Legacy descriptive flag only, not the recommendation gate: Macro-F1 improvement >=0.01, paired 95% bootstrap lower bound >0, and no class recall loss >0.02; all arms converged. Representation compares VAE to PCA."
+  },
+  "options": {
+    "seed": 42,
+    "max_train": 4096,
+    "max_holdout": 1024,
+    "max_generated": 2048,
+    "metric_rows": 512,
+    "bootstrap": 200,
+    "reference_repeats": 10
+  },
+  "flow_evaluation_contract": {
+    "version": "1.0",
+    "domain": "Continuous log(count + fixed per-cell Uniform[1e-6,1) jitter), on a training-selected gene panel. Not raw integer counts or normalized expression.",
+    "fidelity": "Training-standardized mean marginal Wasserstein distance and correlation MAE on up to 64 training-variable genes; compare equal-size independently dequantized real references using existing 1.1x heuristic.",
+    "diversity_overlap": "Same distance-ratio and training-reference overlap diagnostics in standardized continuous log-expression coordinates. No exact-zero/count-validity claims.",
+    "utility": "No supervised utility for this unconditional generation objective. No biological or privacy guarantee."
+  },
+  "software": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "pilot": false,
+  "fitted_signatures": {
+    "image_gan": "19a3d4f490caf6cd9e5526e264a916516a8420fc88aa7eb62d3deb7c47b228d5"
+  },
+  "execution_directory": "/Users/derekyao/Downloads/774_Dim_Red_Project/project2_generative_agent/outputs/final_experiment_set_v1/pathmnist_continuation_v1/execution"
+}

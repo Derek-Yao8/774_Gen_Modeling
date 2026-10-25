@@ -1,0 +1,254 @@
+{
+  "schema_version": "1.0",
+  "status": "completed",
+  "mode": "validation",
+  "pilot": false,
+  "test_accessed": false,
+  "contract": {
+    "version": "2.0",
+    "validity": "Finite samples, exact expected shape, image uint8 range or nonnegative integer counts, label/gene alignment.",
+    "distribution_fidelity": {
+      "image": "Mean marginal Wasserstein distance in training-fitted standardized 4x4 pooled pixel/channel-variation features; includes per-class checks when labels exist. Not FID or a biological/perceptual score.",
+      "counts": "Mean absolute differences in log1p gene means, log1p gene variances, zero fractions, log1p panel-total Wasserstein distance, and correlations among up to 64 training-variable genes.",
+      "reference": "Equal-sized training resampling and held-out real observations, ten fixed-seed reference draws; report median and reference range, not a confidence interval.",
+      "screen": "Synthetic discrepancy <= 1.1 times median real-reference discrepancy, with absolute tolerance 1e-8. A heuristic screen, not a calibrated scientific acceptance guarantee."
+    },
+    "diversity": "Median pairwise Euclidean distance in training-standardized pooled-image/log1p-count features; compare to equal-sized held-out samples; ratio screen 0.9..1.1.",
+    "nearest_neighbor_overlap": "Nearest distances to a fixed training subset; near threshold is its leave-one-out 1st percentile. Report synthetic and held-out rates, plus exact duplicate rates against the same training subset. No privacy guarantee.",
+    "real_test_macro_f1": "Real-only vs real+synthetic fixed C=1 logistic regression on training-fitted pooled-image features. Validation mode computes a validation proxy; only final mode computes test scores. Include class-matched real-resampling augmentation control.",
+    "per_class_recall": "Recall on the same held-out observations with fixed training-class vocabulary; paired, class-stratified bootstrap for macro-F1 differences.",
+    "heldout_representation_quality": "Frozen unconditional VAE posterior means vs training-fitted PCA at the same latent dimension; training-standardized embeddings with identical logistic probes and held-out labels. Unlabeled data are explicitly unsupported for this utility test.",
+    "decision_rules": "Evidence policy v2: invalid output do_not_use; pilots, validation and incomplete evidence insufficient_evidence. No conjunction of quality thresholds establishes usability. Frozen converged task comparison with positive paired interval (and positive comparison against resampling for augmentation) supports task-scoped limited_use; a negative interval supports task-scoped do_not_use. Otherwise insufficient_evidence. No absolute F1 improvement threshold. Generation without a measured downstream task cannot establish biological usefulness.",
+    "image_assessment": "Supplementary joint empirical energy distances in training-standardized local-gradient mean/std and training-only pixel PCA (up to 32 components); reference draws and conditional bootstrap intervals, without cutoffs. Fixed-seed per-class real/generated visual packets record source indices and explicit review status. Not FID or a validated histology score.",
+    "utility_gate": "Legacy descriptive flag only, not the recommendation gate: Macro-F1 improvement >=0.01, paired 95% bootstrap lower bound >0, and no class recall loss >0.02; all arms converged. Representation compares VAE to PCA."
+  },
+  "flow_evaluation_contract": {
+    "version": "1.0",
+    "domain": "Continuous log(count + fixed per-cell Uniform[1e-6,1) jitter), on a training-selected gene panel. Not raw integer counts or normalized expression.",
+    "fidelity": "Training-standardized mean marginal Wasserstein distance and correlation MAE on up to 64 training-variable genes; compare equal-size independently dequantized real references using existing 1.1x heuristic.",
+    "diversity_overlap": "Same distance-ratio and training-reference overlap diagnostics in standardized continuous log-expression coordinates. No exact-zero/count-validity claims.",
+    "utility": "No supervised utility for this unconditional generation objective. No biological or privacy guarantee."
+  },
+  "options": {
+    "seed": 42,
+    "max_train": 4096,
+    "max_holdout": 1024,
+    "max_generated": 2048,
+    "metric_rows": 512,
+    "bootstrap": 200,
+    "reference_repeats": 10
+  },
+  "artifact_hashes": {
+    "execution.json": "1c3933e4a1f1d56ea738227d8a0e08cb948603feb4fbfb17c3cd4b3b27d8444b",
+    "effective_plan.json": "f87bbd06eb2546cb5766a034ffa3579d7b482f6ed1e48d25570e1c1948583545",
+    "source_modeling_plan.json": "a9b8d81b6e913b9dc6efd8051e23321f1aad0fe045fe1b373b1286dcb9773335",
+    "input_profile.json": "1ced597c9503563068baa2476caf51ea711a2cea7dd76dc4e55dfaeb512b9539",
+    "realnvp_flow/job.json": "6c4cc0775fd3f8fd0db59787e30a4add680c6e6d7a79e9768bb9df3aef61fae4",
+    "realnvp_flow/result.json": "17af3881db29af1c74c506c656b5a67540ff8ae16fcb0393d8be07da9afa41f5",
+    "realnvp_flow/preprocessing.json": "627d81ae75810da212dc69e9dea7d693f87627733351986cc6196e0315465c4d",
+    "realnvp_flow/splits.npz": "5e16c23392faed578984e79614f9f50132b016f8351adf1c0267a9c810308beb",
+    "realnvp_flow/best.pt": "bfbf4cdc0da0cb0923346df9cd4df24e2efb3decda6a5e26bc9cd80be233df81",
+    "realnvp_flow/generated.npz": "c437c18c48e2da8ffe89fb46ee939a44c22038c390691029e401a1a09888a9c8",
+    "realnvp_flow/history.json": "a0bd936fa48b1acf6066a910d0116296e9ed826474320fc6d8bcbf877a6435b4"
+  },
+  "models": [
+    {
+      "model": "realnvp_flow",
+      "status": "computed",
+      "task": "data_generation",
+      "output_domain": "log_dequantized_expression",
+      "pilot": false,
+      "validity": {
+        "passed": true,
+        "errors": [],
+        "observations": 1000,
+        "shape": [
+          1000,
+          32
+        ],
+        "dtype": "float64"
+      },
+      "quality": {
+        "status": "computed",
+        "matched_sample_count": 405,
+        "fidelity": {
+          "continuous_feature_wasserstein": {
+            "synthetic_discrepancy": 0.318487640662884,
+            "real_reference_median": 0.09667600147445504,
+            "reference_range": [
+              0.08625727918039296,
+              0.10480248433262361
+            ],
+            "ratio": 3.2943816025225123,
+            "screen_passed": false,
+            "synthetic_discrepancy_bootstrap_95_ci": [
+              0.31455045301477524,
+              0.3421028362977368
+            ],
+            "uncertainty_note": "Independent row bootstrap of generated and held-out samples; conditional on one fitted model."
+          },
+          "continuous_correlation_mae": {
+            "synthetic_discrepancy": 0.05958561316286633,
+            "real_reference_median": 0.05924886578876681,
+            "reference_range": [
+              0.05638226903373464,
+              0.06361574699671414
+            ],
+            "ratio": 1.0056836087850203,
+            "screen_passed": true,
+            "synthetic_discrepancy_bootstrap_95_ci": [
+              0.07582659259256391,
+              0.0864390093441713
+            ],
+            "uncertainty_note": "Independent row bootstrap of generated and held-out samples; conditional on one fitted model."
+          }
+        },
+        "diversity": {
+          "synthetic_median_distance": 7.917611289758581,
+          "real_median_distance": 7.707882223564095,
+          "ratio": 1.0272096874486891,
+          "screen_passed": true
+        },
+        "overlap": {
+          "training_loo_percentile_1": 3.0741902140104633,
+          "synthetic_near_fraction": 0.0,
+          "heldout_near_fraction": 0.007407407407407408,
+          "synthetic_exact_duplicate_fraction": 0.0,
+          "heldout_exact_duplicate_fraction": 0.0,
+          "training_resampling_exact_duplicate_fraction": 1.0,
+          "screen_passed": true,
+          "scope": "Compared only with the recorded training reference subset; not a privacy guarantee."
+        },
+        "per_class": {},
+        "quality_screen_passed": false
+      },
+      "utility": {
+        "status": "not_applicable"
+      },
+      "counts": {
+        "training_reference": 1890,
+        "holdout": 405,
+        "generated": 1000
+      },
+      "plan_criteria_coverage": "executable_contract_v2",
+      "limitations": [
+        "Subsampling caps and selected gene panels limit the scope of conclusions.",
+        "Nearest-neighbor checks cover only the training reference subset and cannot establish privacy.",
+        "Bootstrap intervals condition on one trained model and classifier fit; training variability is not included.",
+        "Quality thresholds are heuristic; biological or perceptual validity requires additional evidence."
+      ],
+      "recommendation": {
+        "decision": "insufficient_evidence",
+        "reason": "No downstream benefit was measured. These are development findings; a frozen final assessment is pending. Quality flags do not prove universal unusability.",
+        "evidence_summary": {
+          "version": "2.0",
+          "quality_concerns": [
+            "continuous_feature_wasserstein"
+          ],
+          "utility_direction": "not_evaluated",
+          "resampling_control_direction": "unavailable",
+          "scope": "log_dequantized_expression",
+          "interpretation": "Quality flags are exploratory descriptions. Utility intervals condition on one training run; they do not include training-seed variation."
+        }
+      },
+      "fit_diagnostics": {
+        "version": "1.0",
+        "status": "available",
+        "epochs_observed": 10,
+        "series": {
+          "train_nll": {
+            "first": 45.43449180643395,
+            "last": 44.98759083016209,
+            "minimum": 44.98759083016209,
+            "minimum_epoch": 10,
+            "recent_start_epoch": 6,
+            "recent_end_epoch": 10,
+            "recent_change": -0.23609894444702206,
+            "observations": 10
+          },
+          "validation_nll": {
+            "first": 45.17477476331923,
+            "last": 45.316150721797236,
+            "minimum": 45.16524665738329,
+            "minimum_epoch": 2,
+            "recent_start_epoch": 6,
+            "recent_end_epoch": 10,
+            "recent_change": 0.10060461538809307,
+            "observations": 10
+          }
+        },
+        "hypotheses": [
+          {
+            "signal": "possible_overfitting",
+            "evidence": [
+              "train_nll",
+              "validation_nll"
+            ],
+            "interpretation": "Training objective decreased while validation objective increased over the recent window. This is compatible with overfitting, not proof of its cause.",
+            "candidate_response": "Consider a controlled capacity or optimization change; do not simply extend identical training."
+          }
+        ],
+        "limitations": [
+          "NLL is for standardized continuous log-dequantized expression. Compare only identical features and preprocessing; it is not count likelihood or ELBO.",
+          "Recent changes are descriptive, not significance tests. Improved model fit does not establish improved samples or downstream benefit."
+        ],
+        "invalid_metrics": []
+      },
+      "assessment": {
+        "validity": {
+          "passed": true,
+          "errors": [],
+          "observations": 1000,
+          "shape": [
+            1000,
+            32
+          ],
+          "dtype": "float64"
+        },
+        "sample_quality": {
+          "status": "computed",
+          "heuristic_screen_passed": false,
+          "interpretation": "Exploratory flags, not a calibrated scientific definition of usability."
+        },
+        "downstream_utility": {
+          "status": "not_applicable",
+          "macro_f1_delta": null,
+          "paired_bootstrap_95_ci": null,
+          "output_domain": "log_dequantized_expression",
+          "interpretation": "A task-specific comparison is required to demonstrate benefit; statistical similarity alone does not demonstrate it."
+        }
+      }
+    }
+  ],
+  "ai_interpretation": {
+    "status": "completed",
+    "models": {
+      "realnvp_flow": {
+        "decision": "insufficient_evidence",
+        "interpretation": "Structural validity passed for 1,000 generated samples with 32 features. Outputs are continuous log(count + uniform jitter), not integer counts or library-normalized expression; exact zeros and count likelihood cannot be inferred. Sample quality is mixed: feature Wasserstein discrepancy was 0.3185 versus a real-reference median of 0.0967 (3.29 times higher), failing its heuristic screen. Correlation discrepancy was close to the reference median, diversity distance ratio was 1.027, and the correlation, diversity, and overlap screens passed. No exact training duplicates were detected against the recorded reference subset. These passes do not establish biological usefulness or privacy, and the failed aggregate quality screen does not establish universal unusability. Training NLL declined while validation NLL increased recently, a pattern compatible with possible overfitting but not proof of its cause. This NLL describes fit to standardized continuous expression only. No downstream benefit was measured; the justified use is exploratory development and task-specific evaluation, with frozen final assessment still pending.",
+        "evidence_keys": [
+          "recommendation.decision",
+          "recommendation.reason",
+          "validity",
+          "output_domain",
+          "counts",
+          "quality.fidelity.continuous_feature_wasserstein",
+          "quality.fidelity.continuous_correlation_mae",
+          "quality.diversity",
+          "quality.overlap",
+          "quality.quality_screen_passed",
+          "fit_diagnostics",
+          "assessment.downstream_utility"
+        ],
+        "limitations": [
+          "Quality screens are exploratory heuristics, not empirically calibrated guarantees of usability or biological benefit.",
+          "Quality comparisons used 405 matched samples; bootstrap intervals condition on one fitted model and do not capture training-seed variation.",
+          "The correlation discrepancy bootstrap interval [0.07583, 0.08644] excludes its reported point estimate of 0.05959; this discrepancy requires clarification before interpreting its uncertainty.",
+          "Overlap checks cover only the recorded training reference subset and provide no privacy guarantee.",
+          "Ten observed training epochs and descriptive validation trends cannot establish a causal training diagnosis or final-test performance.",
+          "Downstream utility was not evaluated, so expression similarity alone justifies no claim of biological or task benefit."
+        ]
+      }
+    }
+  }
+}
