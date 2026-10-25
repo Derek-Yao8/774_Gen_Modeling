@@ -1,227 +1,161 @@
 # Project 2: Generative Modeling Agent
 
-An independent Python project for objective-dependent generative modeling on
-PathMNIST and PBMC 3K. Both datasets have verified local copies under `data/` on the development Mac;
-for a fresh clone, download them with `python3 scripts/setup_datasets.py`.
-Project 1 remains unchanged. All code, dependencies, datasets, checkpoints and
-outputs for new runs live here.
+A Python agent that inspects a dataset, interprets a user objective, selects
+compatible generative models and hyperparameters, trains, generates outputs,
+evaluates evidence and recommends downstream use. Bounded validation-guided
+revisions let it adjust modeling decisions while controlling computation.
 
-Implemented: dataset inspection → AI planning → plan validation → preprocessing →
-VAE/GAN/normalizing-flow training → generated samples → objective-specific evaluation and evidence-based recommendations.
-Non-pilot training and validation experiments are complete on both datasets, with
-portable generated reports and artifacts in [submission/](submission/README.md).
-The separate four-page PDF draft is being edited by the author and will be added last. Final-test assessment is optional
-for the current submission scope and has not been performed. A one-command workflow
-with bounded validation-guided replanning is implemented.
+Implemented models include image and count VAEs, a non-saturating BCE image GAN,
+and planar, radial and RealNVP normalizing flows. Support is limited to the
+implemented data formats and trainer contracts; not every model supports every
+data type or objective. See [planner design](docs/planner_implementation.md),
+[training implementation](docs/execution_implementation.md),
+[flow implementation](docs/normalizing_flows_implementation.md) and
+[evaluation policy](docs/evidence_evaluation_v2.md).
 
-We implemented bounded validation-guided revisions so the agent can use evaluation results to adjust its modeling decisions while controlling computation on the Mac. Round and training-budget limits are configurable; `--max-rounds 1` runs a single modeling round.
+## Submitted deliverables
 
-## Environment
+The repository as a whole is the submission package. The author will add the
+separate four-page **report.pdf** at the repository root last; it is intentionally
+not included yet.
 
-A separate `.venv` is installed here with Python 3.13.2 and PyTorch 2.14.1.
-For a fresh setup (Python 3.11 or newer):
+| Material | Location |
+|---|---|
+| Agent source | [genmodel_agent/](genmodel_agent/) |
+| Tests | [tests/](tests/) |
+| Dependency ranges | [pyproject.toml](pyproject.toml) |
+| Tested Mac dependency snapshot | [requirements-macos-tested.txt](requirements-macos-tested.txt) |
+| PathMNIST illustrated report | [generated_report_1](submission/results/generated_report_1.md) |
+| PBMC3K illustrated report | [generated_report_2](submission/results/generated_report_2.md) |
+| Synthetic outputs, evaluations and decision records | [submission/results/](submission/results/) |
+| Modeling source used for the experiments | [source_snapshot.zip](submission/results/source_snapshot.zip) |
+| Portable-package checksums | [manifest.json](submission/manifest.json) |
+| Objectives and budgets for fresh runs | [run_config.json](submission/run_config.json) |
+
+Reports display figures through relative links. They render directly on GitHub
+or in a Markdown preview; keep the results folders intact when moving them.
+Reading the submitted reports needs no planner login or model training.
+
+## Install and prepare datasets
+
+From the repository root, use Python 3.11 or newer:
 
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -e '.[training,dev,monitoring]'
+.venv/bin/python scripts/setup_datasets.py
 ```
 
-`requirements-macos-tested.txt` records the exact installed dependency versions
-for this Mac. These are platform-specific verification records; other platforms
-should install the project extras and verify backend compatibility.
+The setup script downloads the official PathMNIST and PBMC3K datasets and verifies
+all four files against [recorded checksums](data/checksums.json). It preserves
+publisher splits, extracts only the required 10x files and refuses to overwrite
+mismatching data. New runs use `data/pathmnist.npz` and
+`data/pbmc3k/filtered_gene_bc_matrices/hg19/` inside Project 2. Raw datasets are
+not stored in Git. Project 1 remains unchanged and is not needed for fresh runs.
 
-## Run the complete validation workflow
+Install Codex CLI if not already available, run `codex login`, and sign in with
+ChatGPT. Confirm with `codex login status`. Fresh AI decisions require network
+access and available Codex usage. The adapter has no API-key fallback and does
+not pin an underlying LLM model. Planner authentication and dataset download are
+setup steps, not repeated manual stages within each modeling run.
+
+The experiments used Python 3.13.2, PyTorch 2.14.1 and MPS on an Apple M1 Mac.
+The dependency snapshot records the tested Mac environment; other platforms
+should install the project extras above and verify backend compatibility.
+
+## Run the complete workflow
+
+For one dataset, provide its path and the intended modeling objective:
 
 ```sh
-.venv/bin/genmodel-run data/pathmnist.npz --split train --objective "Generate labeled images and evaluate synthetic augmentation" --out outputs/pathmnist_agent_run --total-minutes 30 --max-rounds 2
-.venv/bin/genmodel-run data/pbmc3k/filtered_gene_bc_matrices/hg19 --objective "Generate synthetic gene-expression profiles and evaluate statistical fidelity" --out outputs/pbmc_agent_run --total-minutes 30 --max-rounds 2
+.venv/bin/genmodel-run data/pathmnist.npz --split train --objective "Generate labeled images and evaluate synthetic augmentation" --out outputs/new_pathmnist_run --total-minutes 60 --max-rounds 2
 ```
 
-Alternatively use `.venv/bin/python -m genmodel_agent.pipeline` with the same
-arguments. The AI can revise its plan after failed validation screens or stop
-with an explanation. Python enforces the attempt/budget limits and preserves
-the task, split/seed, and evaluation rules. Test data are never used by this
-command. Each output directory includes `generated_report.md`, `pipeline.json`,
-and independent per-attempt artifacts. See the [workflow guide](docs/pipeline_implementation.md)
-for budget scope, stopping rules, and limitations. The stage commands below
-remain available for individual inspection and review.
-
-## Inspect
+For continuous selected-gene expression generation:
 
 ```sh
-.venv/bin/python -m genmodel_agent data/pathmnist.npz --split train --objective "Generate labeled images and assess synthetic augmentation" --out outputs/new_image_profile
-.venv/bin/python -m genmodel_agent data/pbmc3k/filtered_gene_bc_matrices/hg19 --objective "Generate synthetic cells and evaluate statistical fidelity" --out outputs/new_cell_profile
+.venv/bin/genmodel-run data/pbmc3k/filtered_gene_bc_matrices/hg19 --objective "Generate continuous log-dequantized expression profiles on a small selected-gene panel and evaluate statistical fidelity" --out outputs/new_pbmc_run --total-minutes 30 --max-rounds 2
 ```
 
-Outputs: `profile.json` and `profile.md`, including shape, feature types, missingness,
-zero fraction, class balance, provenance hashes, objective and compute information.
-Image axes are recoverable through `Dataset.images`; sparse counts stay sparse.
-Additional inspection formats: CSV/TSV (explicit `--orientation`), H5AD (unknown
-preprocessing history flagged). Training currently supports MedMNIST and raw 10x MTX.
-
-## Plan with AI
+Alternatively, run **both datasets with one command**, using the submitted
+objectives and training ceilings:
 
 ```sh
-.venv/bin/python -m genmodel_agent.planning outputs/new_image_profile/profile.json --out outputs/new_image_plan
+.venv/bin/python scripts/run_submission.py --out outputs/submission_rerun
 ```
 
-Requires the Codex CLI signed in with ChatGPT, network access and available Codex
-allowance. Only compact profile summaries are sent, not image/expression arrays.
-Python validates the proposed plan; one repair is allowed. There is no API-key
-fallback. Supported tasks: generation, class balancing/augmentation, representation
-learning. The planner can select image VAEs, image GANs, count VAEs, and standalone planar,
-radial, or RealNVP flows for continuous selected-gene expression generation. GANs support generation/augmentation, not representation learning. See [the planning guide](docs/planner_implementation.md).
+The wrapper runs the normal agent sequentially using local data paths and
+automatic device selection. Add `--device mps` on a compatible Mac or
+`--device cpu` on another machine. Always select a new output directory; existing
+runs are never overwritten. `--max-rounds 1` on `genmodel-run` selects one round.
 
-## Execute a saved plan
+Each workflow performs inspection, planning, execution, generation, validation,
+bounded revision or stopping, and reporting. Its `generated_report.md` embeds
+available real/generated image packets, learning curves and quality plots.
+Non-image models receive their available diagnostic plots. Missing figures are
+omitted, and displaying images does not change their visual-review status.
+Plans, checkpoints, numerical outputs and evaluations are retained per attempt.
+The separate manual PDF is prepared afterward. See the
+[workflow guide](docs/pipeline_implementation.md) for stage commands and budgets.
+
+Check setup and commands without training or planner calls:
 
 ```sh
-.venv/bin/python -m genmodel_agent.execution outputs/pathmnist_plan_live/modeling_plan.json --pilot --out outputs/new_image_pilot
-.venv/bin/python -m genmodel_agent.execution outputs/pbmc3k_plan_live/modeling_plan.json --pilot --out outputs/new_cell_pilot
+.venv/bin/python scripts/setup_datasets.py --verify-only
+.venv/bin/python scripts/run_submission.py --dry-run
+.venv/bin/python -m pytest
 ```
 
-No AI calls are made during execution. Existing plans are revalidated and source
-hashes checked. Use `--dataset PATH` when the same input was relocated.
-Use `--device auto` (default), `cpu`, `mps`, or `cuda`. Auto probes actual model
-forward/backward operations, with a recorded CPU fallback if acceleration fails.
-Explicitly requested devices fail rather than silently changing.
+A fresh AI plan may choose different valid settings. Recorded seeds, plans and
+package versions support reproduction but do not guarantee identical choices or
+numerical results across hardware, libraries or planner versions.
 
-`--pilot` explicitly caps training/validation subsets at 512/128 observations,
-epochs and patience at two, generated samples at 32, and each branch at three
-minutes. Original and effective plans plus overrides are saved separately.
-**Omit `--pilot` to execute the full saved settings.** Choose a new output directory.
-The default monitored worker-memory limit is 6 GiB (`--max-memory-gib`).
+## Understanding the saved results
 
-Each successful model branch saves:
+These are completed **validation** experiments, not final-test results. Neither
+dataset established downstream usefulness of the generated data under the
+measured conditions. The reports retain negative and inconclusive findings.
 
-- `best.pt`, `last.pt`: model and optimizer checkpoints with configuration and provenance.
-- `history.json`, `learning_curve.png`: model-specific training diagnostics (VAE negative ELBO, GAN losses, or flow NLL).
-- `generated.npz`: generated observations, plus labels or gene IDs. VAE runs also save decoder means; GAN runs do not.
-- `preprocessing.json`, `splits.npz`: fitted preprocessing and exact split/subset indices.
-- `device.json`, `job.json`, `training.log`, `result.json`: device checks, effective job and status.
-- `representations.npz` for representation tasks: train/validation posterior means.
+Paths below are relative to `submission/results/`:
 
-The run root contains `execution.json`, `execution_report.md`, source/effective plans,
-input profile, package versions and source-code hashes. Test data remain reserved.
-See [the execution implementation guide](docs/execution_implementation.md) for details.
+| Dataset / round | Authoritative artifacts |
+|---|---|
+| PathMNIST round 1: conditional VAE and GAN | `pathmnist_recovery_v1/round_1/` |
+| PathMNIST round 2: revised GAN | `pathmnist_continuation_v1/` |
+| PBMC round 1: RealNVP | `pbmc/round_1/` |
+| PBMC round 2: revised RealNVP | `pbmc/round_2/` |
 
-## Verification
+PathMNIST's initial process was interrupted; recovery replayed its first plan.
+The recovered first round completed, but a planner usage limit prevented the
+second planning call. After the limit reset, continuation reused that evidence
+and completed round 2. The folders preserve this history. Earlier failure statuses
+are historical records, not the status of the completed experiment set. The
+PathMNIST report explains the details and additional interrupted-run overhead.
 
-```sh
-.venv/bin/python -m pytest -q
-```
+Each model's `execution/<model>/generated.npz` contains synthetic outputs.
+Effective plans, hyperparameters, training histories, split indices, evaluation
+arrays, metrics, recommendations and AI interpretations are included. Model
+checkpoints and verbose CLI event streams are omitted from Git; historical
+execution reports describe the original checkpoint files retained in the local
+archive. Regenerate checkpoints by training if a fresh checkpoint-dependent
+evaluation is needed. Inspecting the supplied samples and metrics needs no rerun.
 
-Full inspection completed on 89,996 PathMNIST training images and 2,700 PBMC cells
-with 32,738 genes. Real CPU and Apple MPS training pilots completed for both
-selected models. These two-epoch pilots verify plumbing, not scientific utility.
+Historical `experiment_config.json`, execution jobs and provenance retain their
+original source paths. Do not use those as fresh-run configurations. The current
+`submission/run_config.json` and `scripts/run_submission.py` use Project 2's local
+data paths and new output directories. `source_snapshot.zip` preserves the
+modeling code used in the experiments. Current root source additionally includes
+the subsequent general illustrated-report update; measured results are unchanged.
 
-Current review artifacts:
+[verification.json](submission/results/verification.json) records the original
+experiment checks. [manifest.json](submission/manifest.json) lists portable-package
+checksums after report image links were rewritten. The separate
+[visual review](submission/results/visual_review.md) records post-run, non-expert
+assistant observations, not expert approval or a review by the automated interpreter.
 
-- [PathMNIST MPS pilot](outputs/pathmnist_training_mps_pilot/execution_report.md)
-- [PBMC MPS pilot](outputs/pbmc3k_training_mps_pilot/execution_report.md)
-- [PathMNIST representation pilot](outputs/pathmnist_representation_training_pilot/execution_report.md)
+## Refresh a report without retraining
 
-Outputs and `.venv` are ignored by Git. Copy required outputs explicitly into any
-submission. The assignment's `generated_report_1`, `generated_report_2`, and final
-four-page `report.pdf` have not been produced by these milestones.
-
-## Evaluate generated outputs
-
-```sh
-.venv/bin/python -m genmodel_agent.evaluation outputs/pathmnist_training_mps_pilot --out outputs/new_image_evaluation
-```
-
-Validation is the default. The command computes validity, real-reference fidelity,
-diversity, overlap and applicable downstream baseline comparisons, then requests
-AI interpretation of those measured results. Add `--no-ai` for offline evaluation.
-See [evaluation implementation and final-test safeguards](docs/evaluation_implementation.md).
-
-Completed pilot reports:
-
-- [PathMNIST augmentation](outputs/pathmnist_evaluation_pilot/evaluation_report.md)
-- [PBMC generation](outputs/pbmc3k_evaluation_pilot/evaluation_report.md)
-- [PathMNIST representation](outputs/pathmnist_representation_evaluation_pilot/evaluation_report.md)
-
-All remain exploratory pilot evidence; no real test set was consumed.
-
-## Non-pilot validation experiments
-
-Fresh AI plans were executed on Apple MPS without pilot caps: PathMNIST completed
-30 epochs on 89,996 training images and generated 5,000 labeled samples; PBMC3K
-completed 60 epochs on 1,890 training cells and generated 1,000 cells on a
-training-selected 1,000-gene panel. Test data remain reserved.
-
-- [Experiment decisions, reproducibility and results](docs/validation_experiments.md)
-- [PathMNIST validation report](outputs/pathmnist_evaluation_validation_v1/evaluation_report.md)
-- [PBMC validation report](outputs/pbmc3k_evaluation_validation_v1/evaluation_report.md)
-
-Neither experiment supports downstream use yet. PathMNIST synthetic augmentation
-reduced validation macro-F1 in the recorded classifier comparison; PBMC failed
-several statistical-fidelity screens. The `insufficient_evidence` label also
-reflects the deliberate validation-only stage, not a failed execution.
-
-## Image GAN option
-
-A conditional or unconditional convolutional GAN is executable for MedMNIST images.
-The planner can select it instead of, or alongside, the image VAE. It uses separate
-adversarial updates and validation image statistics for checkpoint selection; final
-evaluation uses the same quality and downstream checks as the VAE. See the
-[GAN implementation guide](docs/gan_implementation.md).
-
-The [fuller GAN validation experiment](docs/full_gan_experiment.md) completed on
-all official training images: early stopping after 21 epochs, best checkpoint at
-epoch 13, and 5,000 generated images. Its measured augmentation macro-F1 was
-0.6215 versus real-only 0.6337 and the saved VAE's 0.5804. The GAN still failed
-quality/utility screens and did not establish augmentation benefit. Final-test
-data remain reserved.
-
-## Normalizing-flow options
-
-Three distinct standalone models are now executable: `planar_flow`, `radial_flow`,
-and `realnvp_flow` (affine coupling). The AI chooses the method, gene panel,
-flow depth, and training settings; Python enforces compatibility and budgets.
-These currently support unconditional PBMC generation on 2–128 selected genes.
-Their outputs are continuous **log-dequantized expression**, not raw integer
-counts. Image flows and flow-based representation learning are not implemented.
-
-```sh
-.venv/bin/genmodel-run data/pbmc3k/filtered_gene_bc_matrices/hg19 --objective "Generate continuous log-dequantized gene-expression profiles on a small selected gene panel; choose a suitable normalizing flow and assess statistical fidelity" --out outputs/pbmc_flow_run --total-minutes 30 --max-rounds 2
-```
-
-The [implementation and verification guide](docs/normalizing_flows_implementation.md)
-explains the transformations, planner choices, output domain, and pilot findings.
-All 59 tests passed. Each flow also completed an AI-planned, two-epoch Apple MPS
-pilot on PBMC with automated evaluation and reporting. All three pilots failed
-marginal-fidelity screens; they verify execution, not downstream usefulness.
-
-## Training diagnostics
-
-Model-fit summaries now accompany sample-quality and downstream-use evidence in
-reports and planner feedback. Trend hypotheses guide controlled revisions without
-claiming that improved losses guarantee useful samples. Existing thresholds remain
-explicitly exploratory. See [implementation details](docs/training_diagnostics.md)
-and the [retrospective PBMC preview](outputs/diagnostics_review_v1/review.md).
-
-## Evidence-based evaluation v2
-
-All five evaluation improvements are complete. Task-specific evidence now drives
-recommendations instead of a universal all-screens-pass rule. Image evaluation
-adds local texture and training-fitted pixel PCA comparisons plus reproducible
-class-by-class visual packets. See [policy, methods and new reports](docs/evidence_evaluation_v2.md).
-
-### Inline visuals in future workflow reports
-
-`genmodel-run` now embeds available figures directly in `generated_report.md` for
-all attempts and supported datasets/models. It includes real/generated sample
-packets when available (with any number of classes), otherwise a saved generated
-sample grid, plus learning curves and quality-diagnostic plots. Non-image models
-receive their available diagnostic plots without tissue-specific captions.
-Missing figures and stages that did not complete are omitted rather than linked
-as if they existed. Displaying a sample packet does not change its review status.
-
-The report uses relative image links, so keep its round folders with it when moving
-or submitting the report. Standard Markdown viewers display the figures inline.
-Rendering uses saved artifacts only; no additional training or evaluation occurs.
-To refresh a normal workflow report after moving its entire output directory:
+For a normal workflow directory, render its saved state and existing figures:
 
 ```python
 import json
@@ -232,10 +166,16 @@ state = json.loads((out / "pipeline.json").read_text())
 (out / "generated_report.md").write_text(render(state, out), encoding="utf-8")
 ```
 
-This reporting update postdates `final_experiment_set_v1`'s frozen source snapshot.
-That set's original code hashes and historical artifacts are retained; the new
-reporting code applies to future runs without changing its measured results.
+`scripts/package_submission.py` rebuilds the portable result package from the
+local `outputs/final_experiment_set_v1` archive. That development archive is not
+required to read this checkout or run new experiments, and is not included in Git.
+Earlier milestone documents may link to omitted local `outputs/` archives; this
+root README is the current submission and usage guide.
 
-## Submission and GitHub
+## Submit through Canvas
 
-Start with the [submission guide](submission/README.md) for all submitted reports, figures, generated samples and reproduction instructions. The guide is the current deliverable index. Earlier milestone sections and documents may link to local `outputs/` archives that are intentionally not tracked; use the portable `submission/results/` artifacts for review. `report.pdf` will be added by the author.
+Download the pushed repository using GitHub's **Code > Download ZIP**, and add
+your final `report.pdf` at its root. Alternatively ZIP the tracked repository
+contents, excluding `.git`, `.venv`, downloaded data and local caches. Submit the
+whole package, not just `submission/`: source, tests, dependencies and scripts
+live at the repository root. Keep report figures and their relative folders intact.

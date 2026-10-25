@@ -1,10 +1,6 @@
 {
   "scope": "Submission results; report.pdf intentionally excluded",
   "files": {
-    "results/README.md": {
-      "bytes": 1954,
-      "sha256": "3445b8bed44b109e4a17bf66ea43e3f8e6e8716536d6aee34a0901ad9937bcbd"
-    },
     "results/experiment_config.json": {
       "bytes": 4639,
       "sha256": "beb45e3b864b3985ac05c00556a20ed780e7b9b2b6f9b371b95f868e994a6a2a"
