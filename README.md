@@ -51,7 +51,7 @@ all four files against [recorded checksums](data/checksums.json). It preserves
 publisher splits, extracts only the required 10x files and refuses to overwrite
 mismatching data. New runs use `data/pathmnist.npz` and
 `data/pbmc3k/filtered_gene_bc_matrices/hg19/` inside Project 2. Raw datasets are
-not stored in Git. Project 1 remains unchanged and is not needed for fresh runs.
+not stored in Git.
 
 Install Codex CLI if not already available, run `codex login`, and sign in with
 ChatGPT. Confirm with `codex login status`. Fresh AI decisions require network
