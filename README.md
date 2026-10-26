@@ -171,11 +171,3 @@ local `outputs/final_experiment_set_v1` archive. That development archive is not
 required to read this checkout or run new experiments, and is not included in Git.
 Earlier milestone documents may link to omitted local `outputs/` archives; this
 root README is the current submission and usage guide.
-
-## Submit through Canvas
-
-Download the pushed repository using GitHub's **Code > Download ZIP**, and add
-your final `report.pdf` at its root. Alternatively ZIP the tracked repository
-contents, excluding `.git`, `.venv`, downloaded data and local caches. Submit the
-whole package, not just `submission/`: source, tests, dependencies and scripts
-live at the repository root. Keep report figures and their relative folders intact.
